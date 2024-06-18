@@ -1,0 +1,99 @@
+.modern-button {
+  background-color: #ffffff; /* Green */
+  border: none;
+  color: rgb(0, 0, 0);
+  padding: 10px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 10px 5px;
+  cursor: pointer;
+  border-radius: 4px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  transition: all 0.3s ease-in-out;
+  width: "100%";
+}
+
+.modern-button:hover {
+  background-color: #3e8e41;
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2), 0 12px 40px 0 rgba(0, 0, 0, 0.19);
+}
+.container {
+  display: flex;
+  height: 100vh;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.sidebar {
+  width: 300px;
+  border-right: 1px solid #ddd;
+  padding: 20px;
+  background-color: #fff;
+}
+
+.searchBar {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  font-size: 1rem;
+}
+
+.content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.entryList {
+  list-style-type: none;
+  padding: 0;
+}
+
+.entryItem {
+  padding: 15px;
+  border-bottom: 1px solid #ddd;
+  cursor: pointer;
+  background-color: transparent;
+  transition: background-color 0.3s;
+}
+
+.selectedEntryItem {
+  background-color: #e9ecef;
+}
+
+.placeholder {
+  color: #6c757d;
+}
+
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #ddd;
+  }
+  .new-entry-form {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(100%);
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .new-entry-form.slide-in {
+    transform: translateY(0);
+  }
+}

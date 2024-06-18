@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
+import "./JournalView.css";
 
 const JournalView = () => {
   // Sample journal entries
@@ -24,95 +25,61 @@ const JournalView = () => {
   const [selectedEntry, setSelectedEntry] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
 
+  // Create a ref for the bottom of the page
+  const bottomRef = useRef(null);
+
   // Filter entries based on search term
   const filteredEntries = entries.filter((entry) =>
     entry.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Scroll to bottom function
+  const scrollToBottom = () => {
+    bottomRef.current.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
-    <div style={styles.container}>
-      <div style={styles.sidebar}>
+    <div className="container">
+      <div className="sidebar">
         <h2>Journal Entries</h2>
         <input
           type="text"
           placeholder="Search entries"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          style={styles.searchBar}
+          className="searchBar"
         />
-        <ul style={styles.entryList}>
+        <button className="modern-button" onClick={scrollToBottom}>
+          New Entry
+        </button>
+        <ul className="entryList">
           {filteredEntries.map((entry) => (
             <li
               key={entry.id}
-              style={{
-                ...styles.entryItem,
-                ...(selectedEntry && selectedEntry.id === entry.id ? styles.selectedEntryItem : {}),
-              }}
+              className={`entryItem ${
+                selectedEntry && selectedEntry.id === entry.id ? "selectedEntryItem" : ""
+              }`}
               onClick={() => setSelectedEntry(entry)}
             >
               {entry.title}
             </li>
           ))}
         </ul>
+        {/* Hidden div to scroll to */}
+        <div ref={bottomRef} style={{ height: 0 }} />
       </div>
-      <div style={styles.content}>
+      <div className="content">
         {selectedEntry ? (
           <>
             <h2>{selectedEntry.title}</h2>
             <p>{selectedEntry.content}</p>
           </>
         ) : (
-          <p style={styles.placeholder}>Select a journal entry to view its content</p>
+          <p className="placeholder">Select a journal entry to view its content</p>
         )}
       </div>
     </div>
   );
-};
-
-const styles = {
-  container: {
-    display: "flex",
-    height: "100vh",
-    border: "1px solid #e0e0e0", // Lighter grey border
-    borderRadius: "5px",
-    overflow: "hidden",
-  },
-  sidebar: {
-    width: "25%",
-    borderRight: "1px solid #ddd",
-    padding: "20px",
-    backgroundColor: "#fff",
-  },
-  searchBar: {
-    width: "100%",
-    padding: "10px",
-    marginBottom: "10px",
-    borderRadius: "5px",
-    border: "1px solid #ddd",
-    fontSize: "1rem",
-  },
-  content: {
-    width: "75%",
-    padding: "20px",
-    overflowY: "auto",
-  },
-  entryList: {
-    listStyleType: "none",
-    padding: 0,
-  },
-  entryItem: {
-    padding: "15px",
-    borderBottom: "1px solid #ddd",
-    cursor: "pointer",
-    backgroundColor: "transparent",
-    transition: "background-color 0.3s",
-  },
-  selectedEntryItem: {
-    backgroundColor: "#e9ecef",
-  },
-  placeholder: {
-    color: "#6c757d",
-  },
 };
 
 export default JournalView;

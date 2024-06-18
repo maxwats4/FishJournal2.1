@@ -1,131 +1,113 @@
-/**
-=========================================================
-* Material Dashboard 2 React - v2.2.0
-=========================================================
+import React, { useState } from "react";
+import "./JournalEntry.css";
 
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
+const JournalEntryForm = () => {
+  // form variables
+  const [location, setLocation] = useState("");
+  const [date, setDate] = useState("");
+  const [fishCount, setFishCount] = useState(0);
+  const [flyUsed, setFlyUsed] = useState("");
+  const [journalEntry, setJournalEntry] = useState("");
 
-Coded by www.creative-tim.com
+  const locations = ["River A", "River B", "Lake C", "Pond D", "Stream E"];
 
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
-import { useState } from "react";
-
-// react-router-dom components
-import { Link } from "react-router-dom";
-
-// @mui material components
-import Card from "@mui/material/Card";
-import Switch from "@mui/material/Switch";
-import Grid from "@mui/material/Grid";
-import MuiLink from "@mui/material/Link";
-
-// @mui icons
-import FacebookIcon from "@mui/icons-material/Facebook";
-import GitHubIcon from "@mui/icons-material/GitHub";
-import GoogleIcon from "@mui/icons-material/Google";
-
-// Material Dashboard 2 React components
-import MDBox from "components/MDBox";
-import MDTypography from "components/MDTypography";
-import MDInput from "components/MDInput";
-import MDButton from "components/MDButton";
-
-// Authentication layout components
-import BasicLayout from "layouts/authentication/components/BasicLayout";
-
-// Images
-import bgImage from "assets/images/bg-sign-in-basic.jpeg";
-
-function JouranlEntry() {
-  const [rememberMe, setRememberMe] = useState(false);
-
-  const handleSetRememberMe = () => setRememberMe(!rememberMe);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Handle form submission logic here
+    console.log("Location:", location);
+    console.log("Date:", date);
+    console.log("Number of Fish Caught:", fishCount);
+    console.log("Fly Used:", flyUsed);
+    console.log("Journal Entry:", journalEntry);
+    // Reset form fields after submission
+    setLocation("");
+    setDate("");
+    setFishCount(0);
+    setFlyUsed("");
+    setJournalEntry("");
+  };
 
   return (
-    <BasicLayout image={bgImage}>
-      <Card>
-        <MDBox
-          variant="gradient"
-          bgColor="info"
-          borderRadius="lg"
-          coloredShadow="info"
-          mx={2}
-          mt={-3}
-          p={2}
-          mb={1}
-          textAlign="center"
-        >
-          <MDTypography variant="h4" fontWeight="medium" color="white" mt={1}>
-            Sign in
-          </MDTypography>
-          <Grid container spacing={3} justifyContent="center" sx={{ mt: 1, mb: 2 }}>
-            <Grid item xs={2}>
-              <MDTypography component={MuiLink} href="#" variant="body1" color="white">
-                <FacebookIcon color="inherit" />
-              </MDTypography>
-            </Grid>
-            <Grid item xs={2}>
-              <MDTypography component={MuiLink} href="#" variant="body1" color="white">
-                <GitHubIcon color="inherit" />
-              </MDTypography>
-            </Grid>
-            <Grid item xs={2}>
-              <MDTypography component={MuiLink} href="#" variant="body1" color="white">
-                <GoogleIcon color="inherit" />
-              </MDTypography>
-            </Grid>
-          </Grid>
-        </MDBox>
-        <MDBox pt={4} pb={3} px={3}>
-          <MDBox component="form" role="form">
-            <MDBox mb={2}>
-              <MDInput type="email" label="Email" fullWidth />
-            </MDBox>
-            <MDBox mb={2}>
-              <MDInput type="password" label="Password" fullWidth />
-            </MDBox>
-            <MDBox display="flex" alignItems="center" ml={-1}>
-              <Switch checked={rememberMe} onChange={handleSetRememberMe} />
-              <MDTypography
-                variant="button"
-                fontWeight="regular"
-                color="text"
-                onClick={handleSetRememberMe}
-                sx={{ cursor: "pointer", userSelect: "none", ml: -1 }}
+    <div className="journal-entry-form">
+      <div className="form-container">
+        <div className="header">
+          <h2>Journal Entry Submission</h2>
+        </div>
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <div className="custom-select">
+              <select
+                id="location"
+                name="location"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                required
               >
-                &nbsp;&nbsp;Remember me
-              </MDTypography>
-            </MDBox>
-            <MDBox mt={4} mb={1}>
-              <MDButton variant="gradient" color="info" fullWidth>
-                sign in
-              </MDButton>
-            </MDBox>
-            <MDBox mt={3} mb={1} textAlign="center">
-              <MDTypography variant="button" color="text">
-                Don&apos;t have an account?{" "}
-                <MDTypography
-                  component={Link}
-                  to="/authentication/sign-up"
-                  variant="button"
-                  color="info"
-                  fontWeight="medium"
-                  textGradient
-                >
-                  Sign up
-                </MDTypography>
-              </MDTypography>
-            </MDBox>
-          </MDBox>
-        </MDBox>
-      </Card>
-    </BasicLayout>
-  );
-}
+                <option value="">Select Location</option>
+                {locations.map((location) => (
+                  <option key={location} value={location}>
+                    {location}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
 
-export default JournalEntry;
+          <div className="form-group">
+            <input
+              type="date"
+              id="date"
+              name="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <input
+              type="number"
+              id="fish-count"
+              name="fish-count"
+              value={fishCount}
+              onChange={(e) => setFishCount(parseInt(e.target.value) || 0)}
+              placeholder="Number of Fish Caught"
+              min="0"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <input
+              type="text"
+              id="fly-used"
+              name="fly-used"
+              value={flyUsed}
+              onChange={(e) => setFlyUsed(e.target.value)}
+              placeholder="Fly Used"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <textarea
+              id="journal-entry"
+              name="journal-entry"
+              rows="5"
+              value={journalEntry}
+              onChange={(e) => setJournalEntry(e.target.value)}
+              placeholder="Journal Entry"
+              required
+            />
+          </div>
+
+          <button type="submit" className="submit-btn">
+            Submit Entry
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default JournalEntryForm;
