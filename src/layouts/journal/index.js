@@ -19,19 +19,13 @@ import Grid from "@mui/material/Grid";
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
-import MDTypography from "components/MDTypography";
 
 // Material Dashboard 2 React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
-import DataTable from "examples/Tables/DataTable";
 
-// Data
-import authorsTableData from "layouts/tables/data/authorsTableData";
-import projectsTableData from "layouts/tables/data/projectsTableData";
-
-import React, { useState, useCallback } from "react";
+import React from "react";
 
 import "./fileUpload.css";
 
@@ -40,24 +34,9 @@ import JournalView from "./components/JournalView.js";
 import JournalEntry from "./components/JournalEntry";
 
 // react-bootstrap components
-import {
-  Badge,
-  Button,
-  Card,
-  Form,
-  Navbar,
-  Nav,
-  Container,
-  Row,
-  Col,
-  ListGroup,
-  form,
-} from "react-bootstrap";
+import { Container } from "react-bootstrap";
 
 function Journal() {
-  const { columns, rows } = authorsTableData();
-  const { columns: pColumns, rows: pRows } = projectsTableData();
-
   return (
     <DashboardLayout>
       <DashboardNavbar />
