@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/creativetimofficial/material-dashboard-react.git"
+    "url": "git+https://github.com/creativetimofficial/material-dadshboard-react.git"
   },
   "dependencies": {
     "@emotion/cache": "11.10.8",
@@ -20,6 +20,7 @@
     "@mui/material": "5.12.3",
     "chart.js": "4.3.0",
     "chroma-js": "2.4.2",
+    "firebase": "^10.12.2",
     "prop-types": "15.8.1",
     "react": "18.2.0",
     "react-bootstrap": "^2.10.2",
@@ -41,12 +42,6 @@
     "eject": "react-scripts eject",
     "install:clean": "rm -rf node_modules/ && rm -rf package-lock.json && npm install && npm start"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
   "browserslist": {
     "production": [
       ">0.2%",
@@ -67,7 +62,11 @@
     "eslint-plugin-prettier": "4.2.1",
     "eslint-plugin-react": "7.32.2",
     "eslint-plugin-react-hooks": "4.6.0",
-    "prettier": "2.8.8"
+    "prettier": "2.8.8",
+    "timers-browserify": "^2.0.12",
+    "util": "^0.12.5",
+    "webpack": "^5.92.1",
+    "webpack-cli": "^5.1.4"
   },
   "overrides": {
     "svgo": "3.0.2"
