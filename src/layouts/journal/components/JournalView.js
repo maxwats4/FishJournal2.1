@@ -1,6 +1,10 @@
 import React, { useState, useRef } from "react";
 import "./JournalView.css";
 
+//Imports needed for Firebase
+import { initializeApp } from "firebase/app";
+import {getDatabase, onValue, ref} from 'firebase/database';
+
 const JournalView = () => {
   // Sample journal entries
   const [entries] = useState([
@@ -24,6 +28,36 @@ const JournalView = () => {
 
   const [selectedEntry, setSelectedEntry] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+
+  /**
+   * Code for Firebase DB functions
+   */
+
+   // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optionals
+  const firebaseConfig = {
+    apiKey: "AIzaSyBdY267qCAOhbpJXoJBjAJqK6u5_8Eqe7E",
+    authDomain: "fishjournal-b3009.firebaseapp.com",
+    projectId: "fishjournal-b3009",
+    storageBucket: "fishjournal-b3009.appspot.com",
+    messagingSenderId: "691473569516",
+    appId: "1:691473569516:web:b0fe0f0053810f332377c9",
+    measurementId: "G-EJ3ECQ5F9E",
+  };
+
+    
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    // Get a reference to the database service
+    const database = getDatabase(app); 
+    //this needs to be put into a function
+    //this returns the data at Journal/1
+    onValue(ref(database, 'Journal/' + 1), (snapshot) => {
+      const data = snapshot.val();
+      console.log(data);
+      
+    });
+
 
   // Create a ref for the bottom of the page
   const bottomRef = useRef(null);

@@ -13,12 +13,7 @@
   },
   "plugins": ["prettier"],
   "rules": {
-    "prettier/prettier": [
-      "error",
-      {
-        "endOfLine": "auto"
-      }
-    ],
+    "prettier/prettier": "off",
     "no-unused-vars": "warn" // Add this rule to warn about unused variables
   },
   "settings": {
