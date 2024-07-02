@@ -38,8 +38,6 @@ const createClusterCustomIcon = function (cluster) {
   });
 };
 
-// to do :
-// create a function that updates all the values in the db to live data, loads a list with the live data,
 
 //Pulls live weather data and puts it into locations
 // change parameters to lat and long
@@ -100,7 +98,7 @@ const updateGlobalObject = (
 export default function LocationMap() {
   const [loading, setLoading] = useState(true);
 
-  // this is where the new function will go
+  // loops through the global array and updates all of the objects with live data
   useEffect(() => {
     const fetchDataAndUpdate = async () => {
       for (let i = 0; i < window.Locations.length; i++) {
