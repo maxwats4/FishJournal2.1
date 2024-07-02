@@ -45,6 +45,7 @@ import Profile from "layouts/profile";
 import SignIn from "layouts/authentication/sign-in";
 import SignUp from "layouts/authentication/sign-up";
 import Journal from "layouts/journal";
+import Map from "layouts/map";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
@@ -65,6 +66,14 @@ const routes = [
     icon: <Icon fontSize="small">Journal</Icon>,
     route: "/journal",
     component: <Journal />,
+  },
+  {
+    type: "collapse",
+    name: "Map",
+    key: "Map",
+    icon: <Icon fontSize="small">Map</Icon>,
+    route: "/map",
+    component: <Map />,
   },
   {
     type: "collapse",
