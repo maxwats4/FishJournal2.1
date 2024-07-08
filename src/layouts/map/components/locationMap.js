@@ -50,209 +50,129 @@ const createClusterCustomIcon = function (cluster) {
  * Updates the objects from FirebaseBD
  */
 
+const LocationMap = () => {
+  const [loading, setLoading] = useState(true);
+  const [updatedMarkers, setUpdatedMarkers] = useState([]);
 
-// pulls location data from DB, turns them into objects, and puts them into an array
-function getLocationObjects(database, userId, locationList) {
-  return new Promise((resolve, reject) => {
-    const locationsRef = ref(database, `Journal/${userId}/Locations/`);
-    
-    onValue(locationsRef, (snapshot) => {
-      const data = snapshot.val();
-      console.log("Data From DB: ");
-      console.log(data);
+  useEffect(() => {
+    const userId = 123456;
+    const locationList = [];
 
-      if (data) {
-        const locationsArray = Object.values(data).map((location) => {
-          
-          return new Location(
-            location.LocationName,
-            location.Lat,
-            location.Long,
-            0,
-            0,
-            0,
-            location.LocationTemp,
-            location.LocationCloudRating,
-            location.LocationWeatherCondition,
-            location.LocationWind
-          );
-        });
-
-        locationList.push(...locationsArray);
-        resolve(locationList);  // Resolve the promise with the location list
-      } else {
-        reject(new Error("No data available"));  // Reject the promise if there's no data
-      }
-    }, (error) => {
-      reject(error);  // Reject the promise if there's an error with onValue
-    });
-  });
-}
- 
-// update locations weather information
-// seems to pull data but then it sometimes updates and prints the updated version and sometimes it doesnt get runs
-function updateLocationWeather(index) {
-  return new Promise((resolve, reject) => {
-    const apiUrl =
-      "https://api.openweathermap.org/data/2.5/weather?lat=" +
-      locationList[index].getLatitude() +
-      "&lon=" +
-      locationList[index].getLongitude() +
-      "&units=imperial&appid=8003f2b648dfae7cf096951064b5a093";
-
-    (async () => {
+    const fetchDataAndUpdate = async () => {
       try {
-        const response = await fetch(apiUrl);
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
+        const locationsRef = ref(database, `Journal/${userId}/Locations/`);
+        onValue(locationsRef, (snapshot) => {
+          const data = snapshot.val();
 
-        const data = await response.json();
-        // Additional code for updating global objects based on index
-        // Wind speed need to be in miles per hour, not meters per second
+          if (data) {
+            const locationsArray = Object.values(data).map((location) => {
+              return new Location(
+                location.LocationName,
+                location.Lat,
+                location.Long,
+                0,
+                0,
+                0,
+                location.LocationTemp,
+                location.LocationCloudRating,
+                location.LocationWeatherCondition,
+                location.LocationWind
+              );
+            });
 
-        locationList[index].setLocationCloudRating(data.clouds.all);
-        locationList[index].setLocationTemp(data.main.temp);
-        locationList[index].setLocationWind(data.wind.speed);
-        locationList[index].setLocationWeatherConditions(data.weather[0].description);
+            locationList.push(...locationsArray);
 
-        console.log("Updated List");
-        console.log(locationList);
-        
-        resolve(locationList[index]); // Resolve the promise with the updated location
+            // Update weather for each location
+            const weatherPromises = locationList.map((location, index) =>
+              updateLocationWeather(index, location)
+            );
+
+            Promise.all(weatherPromises).then((updatedLocations) => {
+              const markers = updatedLocations.map((location) => ({
+                geocode: [location.getLatitude(), location.getLongitude()],
+                popUp: (
+                  <p>
+                    Location: {location.getName()}
+                    <br />
+                    Current Weather Conditions:{" "}
+                    {location.getLocationWeatherConditions()}
+                    <br />
+                    Cloud Rating: {location.getLocationCloudRating()}%
+                    <br />
+                    Current Temp: {location.getLocationTemp()} degrees
+                    <br />
+                    Current Wind: {location.getLocationWind()} MpH
+                  </p>
+                ),
+                Icon: customIconRed,
+              }));
+
+              setUpdatedMarkers(markers);
+              setLoading(false);
+            });
+          } else {
+            setLoading(false);
+          }
+        });
       } catch (error) {
         console.error("Error:", error);
-        reject(error); // Reject the promise if there's an error
-      }
-    })();
-  });
-}
-
-
-
-// turn the array of location objects into a dynamic markers object to be shown on map
-// to do: it pulls data and creates object. Just need to add objects to an array
-function arrayToMarkers() {
-  const TempUpdatedMarkers = locationList.map((location, index) => {
-
-    var tempLocation = 
-{
-      locationId: index,
-      geocode: [location.getLatitude(), location.getLongitude()],
-      popUp: (
-        <p>
-          Location: {location.getName()}
-          <br />
-          Current Weather Conditions: {location.getLocationWeatherConditions()}
-          <br />
-          Cloud Rating: {location.getLocationCloudRating()}%
-          <br />
-          Current Temp: {location.getLocationTemp()} degrees
-          <br />
-          Current Wind: {location.getLocationWind()} MpH
-        </p>
-      ),
-      Icon: customIconRed, // Adjust icon based on your logic, if necessary
-    };
-    updatedMarkers.push(tempLocation);
-  });
-
-  
-}
-
-
-// basically the main method
-// this is JXL
-export default function LocationMap() {
-  const [loading, setLoading] = useState(true);
-
-  // loops through the global array and updates all of the objects with live data
-  useEffect(() => {
-  
-    const fetchDataAndUpdate = async () => {
-      getLocationObjects(database, userId, locationList)
-      .then((locations) => {
-        // Create an array of promises for updating the weather
-        const weatherPromises = locations.map((_, index) => updateLocationWeather(index));
-    
-        // Wait for all weather update promises to resolve
-        return Promise.all(weatherPromises);
-      })
-      .then((updatedLocations) => {
-        console.log("All locations updated:", updatedLocations);
-        arrayToMarkers();
         setLoading(false);
+      }
+    };
 
-        console.log("old markers list: ");
-        console.log(window.Locations);
-
-        console.log("new markers list");
-        console.log(updatedMarkers);
-        // Continue with the logic that depends on the updated locations
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        // Handle the error
-      });
-      };
-
-     
     fetchDataAndUpdate();
-  }, []); // The empty dependency array ensures that this effect runs only once, similar to componentDidMount
+  }, []);
 
-  
+  const updateLocationWeather = (index, location) => {
+    return new Promise((resolve, reject) => {
+      const apiUrl =
+        `https://api.openweathermap.org/data/2.5/weather?lat=${location.getLatitude()}&lon=${location.getLongitude()}&units=imperial&appid=8003f2b648dfae7cf096951064b5a093`;
+
+      fetch(apiUrl)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          location.setLocationCloudRating(data.clouds.all);
+          location.setLocationTemp(data.main.temp);
+          location.setLocationWind(data.wind.speed);
+          location.setLocationWeatherConditions(data.weather[0].description);
+          resolve(location);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          reject(error);
+        });
+    });
+  };
+
   if (loading) {
-    // Display a loading indicator while data is being fetched
-    return <div>Fetching Live Data...</div>;
+    return <div>Loading...</div>;
   }
+
   return (
     <div className="map-container">
       <MapContainer center={[44.423176, -111.372181]} zoom={13}>
-        {/* OPEN STREEN MAPS TILES */}
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-
-        {/* WATERCOLOR CUSTOM TILES */}
-        {/* <TileLayer
-        attribution='Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.jpg"
-      /> */}
-        {/* GOOGLE MAPS TILES */}
-        {/* <TileLayer
-        attribution="Google Maps"
-        // url="http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}" // regular
-        // url="http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}" // satellite
-        url="http://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}" // terrain
-        maxZoom={20}
-        subdomains={["mt0", "mt1", "mt2", "mt3"]}
-      /> */}
-
         <MarkerClusterGroup
           chunkedLoading
           iconCreateFunction={createClusterCustomIcon}
         >
-          {/* Mapping through the markers */}
-          {updatedMarkers.map((marker) => (
-            <Marker position={marker.geocode} icon={marker.Icon}>
+          {updatedMarkers.map((marker, index) => (
+            <Marker key={index} position={marker.geocode} icon={marker.Icon}>
               <Popup>{marker.popUp}</Popup>
             </Marker>
           ))}
-
-          {/* Hard coded markers */}
-          {/* <Marker position={[51.505, -0.09]} icon={customIcon}>
-          <Popup>This is popup 1</Popup>
-        </Marker>
-        <Marker position={[51.504, -0.1]} icon={customIcon}>
-          <Popup>This is popup 2</Popup>
-        </Marker>
-        <Marker position={[51.5, -0.09]} icon={customIcon}>
-          <Popup>This is popup 3</Popup>
-        </Marker>
-       */}
         </MarkerClusterGroup>
       </MapContainer>
     </div>
   );
-}
+};
+
+export default LocationMap;
