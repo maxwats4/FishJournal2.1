@@ -7,10 +7,6 @@ import {Location} from "./Location";
 import { database } from "./firebaseConfig"; // Adjust the import path accordingly
 import { onValue, ref } from "firebase/database";
 
-//Variables
-var userId = 123456;
-const locationList = []; // holds the location objects in this array
-var updatedMarkers = []; // holds the map markers with location objects
 
 //To Do: Make the map flexible depending on the size of the screen.
 
