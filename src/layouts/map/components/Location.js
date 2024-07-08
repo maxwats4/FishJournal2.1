@@ -1,6 +1,6 @@
 //Location object to store all the location information
 
-class Location {
+export class Location {
     constructor(
       name,
       latitude,

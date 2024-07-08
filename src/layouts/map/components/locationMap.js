@@ -3,10 +3,17 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import { Icon, divIcon, point } from "leaflet";
 import React, { useEffect, useState } from "react";
-import "./Location";
+import {Location} from "./Location";
+import { database } from "./firebaseConfig"; // Adjust the import path accordingly
+import { onValue, ref } from "firebase/database";
+
+//Variables
+var userId = 123456;
+const locationList = []; // holds the location objects in this array
+var updatedMarkers = []; // holds the map markers with location objects
 
 //To Do: Make the map flexible depending on the size of the screen.
-//To Do: Rename App.js to another name that makes more sense to the map.
+
 
 // Red Marker
 const customIconRed = new Icon({
@@ -38,6 +45,127 @@ const createClusterCustomIcon = function (cluster) {
   });
 };
 
+/**
+ * 
+ * Updates the objects from FirebaseBD
+ */
+
+
+// pulls location data from DB, turns them into objects, and puts them into an array
+function getLocationObjects(database, userId, locationList) {
+  return new Promise((resolve, reject) => {
+    const locationsRef = ref(database, `Journal/${userId}/Locations/`);
+    
+    onValue(locationsRef, (snapshot) => {
+      const data = snapshot.val();
+      console.log("Data From DB: ");
+      console.log(data);
+
+      if (data) {
+        const locationsArray = Object.values(data).map((location) => {
+          
+          return new Location(
+            location.LocationName,
+            location.Lat,
+            location.Long,
+            0,
+            0,
+            0,
+            location.LocationTemp,
+            location.LocationCloudRating,
+            location.LocationWeatherCondition,
+            location.LocationWind
+          );
+        });
+
+        locationList.push(...locationsArray);
+        resolve(locationList);  // Resolve the promise with the location list
+      } else {
+        reject(new Error("No data available"));  // Reject the promise if there's no data
+      }
+    }, (error) => {
+      reject(error);  // Reject the promise if there's an error with onValue
+    });
+  });
+}
+ 
+// update locations weather information
+// seems to pull data but then it sometimes updates and prints the updated version and sometimes it doesnt get runs
+function updateLocationWeather(index) {
+  return new Promise((resolve, reject) => {
+    const apiUrl =
+      "https://api.openweathermap.org/data/2.5/weather?lat=" +
+      locationList[index].getLatitude() +
+      "&lon=" +
+      locationList[index].getLongitude() +
+      "&units=imperial&appid=8003f2b648dfae7cf096951064b5a093";
+
+    (async () => {
+      try {
+        const response = await fetch(apiUrl);
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+
+        const data = await response.json();
+        // Additional code for updating global objects based on index
+        // Wind speed need to be in miles per hour, not meters per second
+
+        locationList[index].setLocationCloudRating(data.clouds.all);
+        locationList[index].setLocationTemp(data.main.temp);
+        locationList[index].setLocationWind(data.wind.speed);
+        locationList[index].setLocationWeatherConditions(data.weather[0].description);
+
+        console.log("Updated List");
+        console.log(locationList);
+        
+        resolve(locationList[index]); // Resolve the promise with the updated location
+      } catch (error) {
+        console.error("Error:", error);
+        reject(error); // Reject the promise if there's an error
+      }
+    })();
+  });
+}
+
+
+
+// turn the array of location objects into a dynamic markers object to be shown on map
+// to do: it pulls data and creates object. Just need to add objects to an array
+function arrayToMarkers() {
+  const TempUpdatedMarkers = locationList.map((location, index) => {
+
+    var tempLocation = 
+{
+      locationId: index,
+      geocode: [location.getLatitude(), location.getLongitude()],
+      popUp: (
+        <p>
+          Location: {location.getName()}
+          <br />
+          Current Weather Conditions: {location.getLocationWeatherConditions()}
+          <br />
+          Cloud Rating: {location.getLocationCloudRating()}%
+          <br />
+          Current Temp: {location.getLocationTemp()} degrees
+          <br />
+          Current Wind: {location.getLocationWind()} MpH
+        </p>
+      ),
+      Icon: customIconRed, // Adjust icon based on your logic, if necessary
+    };
+    updatedMarkers.push(tempLocation);
+  });
+
+  return TempUpdatedMarkers; // Return the updated markers array
+}
+// put these methods on the use effect
+
+
+/**
+ * Old functions for the map
+ *
+ */
 
 //Pulls live weather data and puts it into locations
 // change parameters to lat and long
@@ -105,10 +233,39 @@ export default function LocationMap() {
         fetchWeatherData(i);
       }
       setTimeout(() => {
-        setLoading(false);
+        
       }, 1000);
     };
 
+    const fetchDataAndUpdate2 = async () => {
+      getLocationObjects(database, userId, locationList)
+      .then((locations) => {
+        // Create an array of promises for updating the weather
+        const weatherPromises = locations.map((_, index) => updateLocationWeather(index));
+    
+        // Wait for all weather update promises to resolve
+        return Promise.all(weatherPromises);
+      })
+      .then((updatedLocations) => {
+        console.log("All locations updated:", updatedLocations);
+        arrayToMarkers();
+        setLoading(false);
+
+        console.log("old markers list: ");
+        console.log(window.Locations);
+
+        console.log("new markers list");
+        console.log(updatedMarkers);
+        // Continue with the logic that depends on the updated locations
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        // Handle the error
+      });
+      };
+
+      // setLoading(false);
+    fetchDataAndUpdate2();
     fetchDataAndUpdate();
   }, []); // The empty dependency array ensures that this effect runs only once, similar to componentDidMount
 
@@ -192,7 +349,7 @@ export default function LocationMap() {
       Icon: customIconRed,
     },
   ];
-
+//
   if (loading) {
     // Display a loading indicator while data is being fetched
     return <div>Fetching Live Data...</div>;
@@ -226,7 +383,7 @@ export default function LocationMap() {
           iconCreateFunction={createClusterCustomIcon}
         >
           {/* Mapping through the markers */}
-          {markers.map((marker) => (
+          {updatedMarkers.map((marker) => (
             <Marker position={marker.geocode} icon={marker.Icon}>
               <Popup>{marker.popUp}</Popup>
             </Marker>
