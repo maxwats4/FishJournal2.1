@@ -9,13 +9,82 @@ import {
 import { Icon } from "leaflet";
 import "./styles.css";
 
+// Imports needed for Firebase
+import { ref, set, onValue } from 'firebase/database';
+import { database } from "./firebaseConfig"; // Adjust the import path accordingly
+
 const ClickMap = () => {
   const [marker, setMarker] = useState(null);
-  const [currentWeatherConditions, setCurrentWeatherConditions] =
-    useState(null);
+  const [currentWeatherConditions, setCurrentWeatherConditions] = useState(null);
   const [cloudRating, setCloudRating] = useState(0);
   const [currentTemp, setCurrentTemp] = useState(0);
   const [currentWindSpeed, setCurrentWindSpeed] = useState(0);
+
+  // map saving variables
+  const [userId, setUserId] = useState(123456);
+  const [lat, setLat] = useState(0); 
+  const [long, setLong] = useState(0);
+  const [name, setName] = useState("name");
+
+  /**
+   * Returns next map ID for the user
+   */
+  function getNextLocationId() {
+    return new Promise((resolve, reject) => {
+      var highestKey = 0;
+
+      // 1 is the user id
+      onValue(ref(database, 'Journal/' + userId + '/Locations'), (snapshot) => {
+        const data = snapshot.val();
+        console.log(data);
+
+        for (const key in data) {
+          if (parseInt(key) >= highestKey) {
+            highestKey = parseInt(key);
+          }
+        }
+
+        console.log("highest Key: " + highestKey);
+        resolve(highestKey + 1);
+      }, (error) => {
+        reject(error);
+      });
+    });
+  }
+
+  function saveLocation() {
+    getNextLocationId()
+      .then((nextId) => {
+
+        const input = document.querySelector('.textbar-input');
+        console.log(input);
+        const inputName = input.value;
+        console.log('Set name worked ' + inputName);
+        input.value = ''; // Clear the input after submission
+
+
+        const locationData = {
+          Lat: lat,
+          Long: long,
+          LocationCloudRating: cloudRating,
+          LocationName: inputName,
+          LocationTemp: currentTemp,
+          LocationWeatherCondition: currentWeatherConditions,
+          LocationWind: currentWindSpeed,
+        };
+
+        set(ref(database, 'Journal/'+userId+'/Locations/' + nextId), locationData)
+          .then(() => {
+            console.log("Data submitted successfully!");
+          })
+          .catch((error) => {
+            console.error("Error submitting data:", error);
+          });
+      })
+      .catch((error) => {
+        console.error("Error retrieving next journal ID:", error);
+      });
+  }
 
   // Red Marker
   const customIconRed = new Icon({
@@ -23,7 +92,7 @@ const ClickMap = () => {
     iconSize: [38, 38],
   });
 
-  //Pulls live weather data and puts it into locations
+  // Pulls live weather data and puts it into locations
   async function fetchWeatherData(lat, lng) {
     const apiUrl =
       "https://api.openweathermap.org/data/2.5/weather?lat=" +
@@ -40,7 +109,7 @@ const ClickMap = () => {
 
       const data = await response.json();
       // Additional code for updating global objects based on index
-      //Wind speed need to be in miles per hour, not meters per second
+      // Wind speed need to be in miles per hour, not meters per second
 
       setCloudRating(data.clouds.all);
       setCurrentTemp(data.main.temp);
@@ -53,19 +122,28 @@ const ClickMap = () => {
 
   const handleMapClick = (e) => {
     fetchWeatherData(e.latlng.lat, e.latlng.lng);
+    setLat(e.latlng.lat);
+    setLong(e.latlng.lng);
 
     const newMarker = {
       geocode: [e.latlng.lat, e.latlng.lng],
       popUp: (
-        <p>
-          Current Weather Conditions: {currentWeatherConditions}
+        <div>
+          <p>
+            Current Weather Conditions: {currentWeatherConditions}
+            <br />
+            Cloud Rating: {cloudRating}%
+            <br />
+            Current Temp: {currentTemp} degrees
+            <br />
+            Current Wind: {currentWindSpeed} MpH
+          </p>
+          <input type="text" class="textbar-input" placeholder="Enter Location Name" />
           <br />
-          Cloud Rating: {cloudRating}%
-          <br />
-          Current Temp: {currentTemp} degrees
-          <br />
-          Current Wind: {currentWindSpeed} MpH
-        </p>
+          <button type="button" className="submit-btn" onClick={saveLocation}>
+            Save Location
+          </button>
+        </div>
       ),
       Icon: customIconRed,
     };
