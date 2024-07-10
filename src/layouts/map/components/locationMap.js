@@ -5,7 +5,8 @@ import { Icon, divIcon, point } from "leaflet";
 import React, { useEffect, useState } from "react";
 import {Location} from "./Location";
 import { database } from "./firebaseConfig"; // Adjust the import path accordingly
-import { onValue, ref } from "firebase/database";
+import { onValue, ref, query, orderByChild, equalTo, get, remove } from "firebase/database";
+
 
 
 //To Do: Make the map flexible depending on the size of the screen.
@@ -41,81 +42,144 @@ const createClusterCustomIcon = function (cluster) {
   });
 };
 
-/**
- * 
- * Updates the objects from FirebaseBD
- */
-
 const LocationMap = () => {
   const [loading, setLoading] = useState(true);
   const [updatedMarkers, setUpdatedMarkers] = useState([]);
+  const userId = 123456;
 
-  useEffect(() => {
-    const userId = 123456;
-    const locationList = [];
 
-    const fetchDataAndUpdate = async () => {
-      try {
-        const locationsRef = ref(database, `Journal/${userId}/Locations/`);
-        onValue(locationsRef, (snapshot) => {
-          const data = snapshot.val();
+// problem: for some reason when the map rerenders after deleting the location, the UpdatedMarkers is empty causing it to crash. 
+// it might not be the updatedMarkers array becasue the array is empty in the beginning too. 
 
-          if (data) {
-            const locationsArray = Object.values(data).map((location) => {
-              return new Location(
-                location.LocationName,
-                location.Lat,
-                location.Long,
-                0,
-                0,
-                0,
-                location.LocationTemp,
-                location.LocationCloudRating,
-                location.LocationWeatherCondition,
-                location.LocationWind
-              );
-            });
+  const deleteLocation = async (lat, long) => {
 
-            locationList.push(...locationsArray);
-
-            // Update weather for each location
-            const weatherPromises = locationList.map((location, index) =>
-              updateLocationWeather(index, location)
-            );
-
-            Promise.all(weatherPromises).then((updatedLocations) => {
-              const markers = updatedLocations.map((location) => ({
-                geocode: [location.getLatitude(), location.getLongitude()],
-                popUp: (
-                  <p>
-                    Location: {location.getName()}
-                    <br />
-                    Current Weather Conditions:{" "}
-                    {location.getLocationWeatherConditions()}
-                    <br />
-                    Cloud Rating: {location.getLocationCloudRating()}%
-                    <br />
-                    Current Temp: {location.getLocationTemp()} degrees
-                    <br />
-                    Current Wind: {location.getLocationWind()} MpH
-                  </p>
-                ),
-                Icon: customIconRed,
-              }));
-
-              setUpdatedMarkers(markers);
-              setLoading(false);
-            });
-          } else {
-            setLoading(false);
-          }
-        });
-      } catch (error) {
-        console.error("Error:", error);
-        setLoading(false);
-      }
+    const refreshPage = () => {
+      window.location.reload();
     };
 
+    try {
+      const locationsRef = ref(database, `Journal/${userId}/Locations/`);
+      const latQuery = query(locationsRef, orderByChild('Lat'), equalTo(lat));
+      const snapshot = await get(latQuery);
+  
+      // deletes location from the db. 
+      if (snapshot.exists()) {
+        console.log("Updated marker: ");
+        console.log(updatedMarkers);
+        snapshot.forEach((childSnapshot) => {
+          if (childSnapshot.val().Long === long) {
+            const locationRef = ref(database, `Journal/${userId}/Locations/${childSnapshot.key}`);
+            remove(locationRef)
+              .then(() => {
+                console.log('Location deleted successfully');
+                refreshPage();
+              })
+              .catch((error) => {
+                console.error('Error deleting location:', error);
+              });
+          }
+        });
+
+        // made add some code to rerender and redisplay the markers
+      } else {
+        console.log('No matching location found');
+      }
+    } catch (error) {
+      console.error('Error retrieving location:', error);
+    }
+  };
+  
+
+  /**
+   * Code for fetching and updating map with DB locations
+   */
+  const locationList = [new Location(
+    "Base Location",
+    1,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  )];
+
+  const fetchDataAndUpdate = async () => {
+    try {
+      const locationsRef = ref(database, `Journal/${userId}/Locations/`);
+      onValue(locationsRef, (snapshot) => {
+        const data = snapshot.val();
+        console.log("data: ");
+        console.log(data);
+
+        if (data) {
+          const locationsArray = Object.values(data).map((location) => {
+            return new Location(
+              location.LocationName,
+              location.Lat,
+              location.Long,
+              0,
+              0,
+              0,
+              location.LocationTemp,
+              location.LocationCloudRating,
+              location.LocationWeatherCondition,
+              location.LocationWind
+            );
+          });
+
+          locationList.push(...locationsArray);
+
+          // Update weather for each location
+          const weatherPromises = locationList.map((location, index) =>
+            updateLocationWeather(index, location)
+          );
+
+          Promise.all(weatherPromises).then((updatedLocations) => {
+            const markers = updatedLocations.map((location) => ({
+              geocode: [location.getLatitude(), location.getLongitude()],
+              popUp: (
+                <p>
+                  Location: {location.getName()}
+                  <br />
+                  Current Weather Conditions:{" "}
+                  {location.getLocationWeatherConditions()}
+                  <br />
+                  Cloud Rating: {location.getLocationCloudRating()}%
+                  <br />
+                  Current Temp: {location.getLocationTemp()} degrees
+                  <br />
+                  Current Wind: {location.getLocationWind()} MpH
+                  <button type="button" className="delete-btn" onClick={() => deleteLocation(location.getLatitude(), location.getLongitude())}> 
+                   Delete Location
+                  </button>
+                </p>
+              ),
+              Icon: customIconRed,
+            }));
+
+            // code for the delete button to call the delete function onClick={() => deleteLocation(location.getLatitude(), location.getLongitude())}
+            setUpdatedMarkers(markers);
+
+            console.log("Updated marker before deletion: ");
+            console.log(updatedMarkers);
+            setLoading(false);
+          });
+        } else {
+          setLoading(false);
+        }
+      });
+    } catch (error) {
+      console.error("Error:", error);
+      setLoading(false);
+    }
+  };
+  
+
+  useEffect(() => {
+  
     fetchDataAndUpdate();
   }, []);
 
@@ -129,6 +193,7 @@ const LocationMap = () => {
           if (!response.ok) {
             throw new Error("Network response was not ok");
           }
+          
           return response.json();
         })
         .then((data) => {

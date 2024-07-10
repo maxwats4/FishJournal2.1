@@ -36,7 +36,6 @@ const ClickMap = () => {
       // 1 is the user id
       onValue(ref(database, 'Journal/' + userId + '/Locations'), (snapshot) => {
         const data = snapshot.val();
-        console.log(data);
 
         for (const key in data) {
           if (parseInt(key) >= highestKey) {
@@ -44,7 +43,6 @@ const ClickMap = () => {
           }
         }
 
-        console.log("highest Key: " + highestKey);
         resolve(highestKey + 1);
       }, (error) => {
         reject(error);
@@ -57,9 +55,7 @@ const ClickMap = () => {
       .then((nextId) => {
 
         const input = document.querySelector('.textbar-input');
-        console.log(input);
         const inputName = input.value;
-        console.log('Set name worked ' + inputName);
         input.value = ''; // Clear the input after submission
 
 
