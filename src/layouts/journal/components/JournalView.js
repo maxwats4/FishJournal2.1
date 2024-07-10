@@ -2,13 +2,19 @@ import React, { useState, useRef, useEffect } from "react";
 import "./JournalView.css";
 import { database } from "./firebaseConfig"; // Adjust the import path accordingly
 import { onValue, ref } from "firebase/database";
+import {currentUserId} from "../../authentication/globalCredentials";
+
+
+/**
+ * 
+ * To do: When there is alot of journal entries, it messes with the u
+ */
 
 const JournalView = () => {
   const [entries, setEntries] = useState([]);
   const [selectedEntry, setSelectedEntry] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const userId = 123456;
   const bottomRef = useRef(null);
 
   const filteredEntries = entries.filter(
@@ -23,7 +29,7 @@ const JournalView = () => {
 
   useEffect(() => {
     const getJournalEntries = () => {
-      onValue(ref(database, `Journal/${userId}/JournalEntry/`), (snapshot) => {
+      onValue(ref(database, `Journal/${currentUserId}/JournalEntry/`), (snapshot) => {
         const data = snapshot.val();
         if (data) {
           const entriesArray = Object.values(data).map((entry, index) => ({
@@ -49,35 +55,36 @@ const JournalView = () => {
   return (
     <div className="container">
       <div className="sidebar">
-        <h2>Journal Entries</h2>
-        <input
-          type="text"
-          placeholder="Search entries"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="searchBar"
-        />
-        <button className="modern-button" onClick={scrollToBottom}>
-          New Entry
-        </button>
-        <ul className="entryList">
-          {filteredEntries.map((entry) => (
-            <li
-              key={entry.id}
-              className={`entryItem ${
-                selectedEntry && selectedEntry.id === entry.id
-                  ? "selectedEntryItem"
-                  : ""
-              }`}
-              onClick={() => setSelectedEntry(entry)}
-            >
-              {entry.title}
-            </li>
-          ))}
-        </ul>
-        {/* Hidden div to scroll to */}
-        <div ref={bottomRef} style={{ height: 0 }} />
-      </div>
+  <h2>Journal Entries</h2>
+  <input
+    type="text"
+    placeholder="Search entries"
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+    className="searchBar"
+  />
+  <button className="modern-button" onClick={scrollToBottom}>
+    New Entry
+  </button>
+  <div className="entryListContainer">
+    <ul className="entryList">
+      {filteredEntries.map((entry) => (
+        <li
+          key={entry.id}
+          className={`entryItem ${
+            selectedEntry && selectedEntry.id === entry.id ? "selectedEntryItem" : ""
+          }`}
+          onClick={() => setSelectedEntry(entry)}
+        >
+          {entry.title}
+        </li>
+      ))}
+    </ul>
+    {/* Hidden div to scroll to */}
+    <div ref={bottomRef} style={{ height: 0 }} />
+  </div>
+</div>
+
       <div className="content">
         {selectedEntry ? (
           <>

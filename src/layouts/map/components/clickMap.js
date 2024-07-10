@@ -12,6 +12,7 @@ import "./styles.css";
 // Imports needed for Firebase
 import { ref, set, onValue } from 'firebase/database';
 import { database } from "./firebaseConfig"; // Adjust the import path accordingly
+import {currentUserId} from "../../authentication/globalCredentials"
 
 const ClickMap = () => {
   const [marker, setMarker] = useState(null);
@@ -21,7 +22,6 @@ const ClickMap = () => {
   const [currentWindSpeed, setCurrentWindSpeed] = useState(0);
 
   // map saving variables
-  const [userId, setUserId] = useState(123456);
   const [lat, setLat] = useState(0); 
   const [long, setLong] = useState(0);
   const [name, setName] = useState("name");
@@ -34,7 +34,7 @@ const ClickMap = () => {
       var highestKey = 0;
 
       // 1 is the user id
-      onValue(ref(database, 'Journal/' + userId + '/Locations'), (snapshot) => {
+      onValue(ref(database, 'Journal/' + currentUserId + '/Locations'), (snapshot) => {
         const data = snapshot.val();
 
         for (const key in data) {
@@ -69,7 +69,7 @@ const ClickMap = () => {
           LocationWind: currentWindSpeed,
         };
 
-        set(ref(database, 'Journal/'+userId+'/Locations/' + nextId), locationData)
+        set(ref(database, 'Journal/'+currentUserId+'/Locations/' + nextId), locationData)
           .then(() => {
             console.log("Data submitted successfully!");
           })

@@ -4,6 +4,8 @@ import "./JournalEntry.css";
 // Imports needed for Firebase
 import { ref, set, onValue } from 'firebase/database';
 import { database } from "./firebaseConfig"; // Adjust the import path accordingly
+import {currentUserId} from "../../authentication/globalCredentials";
+
 
 const JournalEntryForm = () => {
   // form variables
@@ -19,7 +21,6 @@ const JournalEntryForm = () => {
   /**
    * Code for Firebase DB
    */
-  var userId = 123456;
 
   //Returns the next available journal id
   function getNextJournalId() {
@@ -27,7 +28,7 @@ const JournalEntryForm = () => {
       var highestKey = 0;
   
       // 1 is the user id
-      onValue(ref(database, 'Journal/' + userId + '/JournalEntry'), (snapshot) => {
+      onValue(ref(database, 'Journal/' + currentUserId + '/JournalEntry'), (snapshot) => {
         const data = snapshot.val();
         console.log(data);
   
@@ -54,8 +55,8 @@ const JournalEntryForm = () => {
         nextJournalId = nextId;
 
         //The JournalID is where the increased id number will go 
-        set(ref(database, 'Journal/'+userId+'/JournalEntry/' + nextJournalId), {
-          UserId: userId,
+        set(ref(database, 'Journal/'+currentUserId+'/JournalEntry/' + nextJournalId), {
+          UserId: currentUserId,
           Location: location,
           Date: date,  
           FishCount: fishCount,

@@ -6,7 +6,7 @@ import React, { useEffect, useState } from "react";
 import {Location} from "./Location";
 import { database } from "./firebaseConfig"; // Adjust the import path accordingly
 import { onValue, ref, query, orderByChild, equalTo, get, remove } from "firebase/database";
-
+import {currentUserId} from "../../authentication/globalCredentials"
 
 
 //To Do: Make the map flexible depending on the size of the screen.
@@ -45,7 +45,6 @@ const createClusterCustomIcon = function (cluster) {
 const LocationMap = () => {
   const [loading, setLoading] = useState(true);
   const [updatedMarkers, setUpdatedMarkers] = useState([]);
-  const userId = 123456;
 
 
 // problem: for some reason when the map rerenders after deleting the location, the UpdatedMarkers is empty causing it to crash. 
@@ -58,7 +57,7 @@ const LocationMap = () => {
     };
 
     try {
-      const locationsRef = ref(database, `Journal/${userId}/Locations/`);
+      const locationsRef = ref(database, `Journal/${currentUserId}/Locations/`);
       const latQuery = query(locationsRef, orderByChild('Lat'), equalTo(lat));
       const snapshot = await get(latQuery);
   
@@ -68,7 +67,7 @@ const LocationMap = () => {
         console.log(updatedMarkers);
         snapshot.forEach((childSnapshot) => {
           if (childSnapshot.val().Long === long) {
-            const locationRef = ref(database, `Journal/${userId}/Locations/${childSnapshot.key}`);
+            const locationRef = ref(database, `Journal/${currentUserId}/Locations/${childSnapshot.key}`);
             remove(locationRef)
               .then(() => {
                 console.log('Location deleted successfully');
@@ -108,7 +107,7 @@ const LocationMap = () => {
 
   const fetchDataAndUpdate = async () => {
     try {
-      const locationsRef = ref(database, `Journal/${userId}/Locations/`);
+      const locationsRef = ref(database, `Journal/${currentUserId}/Locations/`);
       onValue(locationsRef, (snapshot) => {
         const data = snapshot.val();
         console.log("data: ");
