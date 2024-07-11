@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   MapContainer,
   TileLayer,
@@ -12,7 +12,9 @@ import "./styles.css";
 // Imports needed for Firebase
 import { ref, set, onValue } from 'firebase/database';
 import { database } from "./firebaseConfig"; // Adjust the import path accordingly
-import {currentUserId} from "../../authentication/globalCredentials"
+
+// Global User Credentials from UserProvider
+import { UserContext } from "layouts/authentication/UserProvider";
 
 const ClickMap = () => {
   const [marker, setMarker] = useState(null);
@@ -20,6 +22,9 @@ const ClickMap = () => {
   const [cloudRating, setCloudRating] = useState(0);
   const [currentTemp, setCurrentTemp] = useState(0);
   const [currentWindSpeed, setCurrentWindSpeed] = useState(0);
+
+  //Global Current User Id
+  const { userID, setUserID } = useContext(UserContext);
 
   // map saving variables
   const [lat, setLat] = useState(0); 
@@ -34,7 +39,7 @@ const ClickMap = () => {
       var highestKey = 0;
 
       // 1 is the user id
-      onValue(ref(database, 'Journal/' + currentUserId + '/Locations'), (snapshot) => {
+      onValue(ref(database, 'Journal/' + userID + '/Locations'), (snapshot) => {
         const data = snapshot.val();
 
         for (const key in data) {
@@ -69,7 +74,7 @@ const ClickMap = () => {
           LocationWind: currentWindSpeed,
         };
 
-        set(ref(database, 'Journal/'+currentUserId+'/Locations/' + nextId), locationData)
+        set(ref(database, 'Journal/'+userID+'/Locations/' + nextId), locationData)
           .then(() => {
             console.log("Data submitted successfully!");
           })

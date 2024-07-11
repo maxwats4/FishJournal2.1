@@ -13,7 +13,7 @@ Coded by www.creative-tim.com
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
 
-import { useState } from "react";
+import { useState, useContext } from "react";
 
 // react-router-dom components
 import { Link } from "react-router-dom";
@@ -41,10 +41,20 @@ import BasicLayout from "layouts/authentication/components/BasicLayout";
 // Images
 import bgImage from "assets/images/bg-sign-in-basic.jpeg";
 
+// Firebase 
+import { database } from "../firebaseConfig"; // Adjust the import path accordingly
+import { onValue, ref } from "firebase/database";
+
+// Global User Credentials from UserProvider
+import { UserContext } from "layouts/authentication/UserProvider";
+
 function Basic() {
   const [rememberMe, setRememberMe] = useState(false);
 
   const handleSetRememberMe = () => setRememberMe(!rememberMe);
+
+  //Global Current User Id
+  const { userID, setUserID } = useContext(UserContext);
 
   return (
     <BasicLayout image={bgImage}>

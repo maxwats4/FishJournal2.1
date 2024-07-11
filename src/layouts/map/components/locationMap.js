@@ -2,11 +2,13 @@ import "./styles.css";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import { Icon, divIcon, point } from "leaflet";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import {Location} from "./Location";
 import { database } from "./firebaseConfig"; // Adjust the import path accordingly
 import { onValue, ref, query, orderByChild, equalTo, get, remove } from "firebase/database";
-import {currentUserId} from "../../authentication/globalCredentials"
+
+// Global User Credentials from UserProvider
+import { UserContext } from "layouts/authentication/UserProvider";
 
 
 //To Do: Make the map flexible depending on the size of the screen.
@@ -46,6 +48,9 @@ const LocationMap = () => {
   const [loading, setLoading] = useState(true);
   const [updatedMarkers, setUpdatedMarkers] = useState([]);
 
+  //Global Current User Id
+  const { userID, setUserID } = useContext(UserContext);
+
 
 // problem: for some reason when the map rerenders after deleting the location, the UpdatedMarkers is empty causing it to crash. 
 // it might not be the updatedMarkers array becasue the array is empty in the beginning too. 
@@ -57,7 +62,7 @@ const LocationMap = () => {
     };
 
     try {
-      const locationsRef = ref(database, `Journal/${currentUserId}/Locations/`);
+      const locationsRef = ref(database, `Journal/${userID}/Locations/`);
       const latQuery = query(locationsRef, orderByChild('Lat'), equalTo(lat));
       const snapshot = await get(latQuery);
   
@@ -67,7 +72,7 @@ const LocationMap = () => {
         console.log(updatedMarkers);
         snapshot.forEach((childSnapshot) => {
           if (childSnapshot.val().Long === long) {
-            const locationRef = ref(database, `Journal/${currentUserId}/Locations/${childSnapshot.key}`);
+            const locationRef = ref(database, `Journal/${userID}/Locations/${childSnapshot.key}`);
             remove(locationRef)
               .then(() => {
                 console.log('Location deleted successfully');
@@ -107,7 +112,7 @@ const LocationMap = () => {
 
   const fetchDataAndUpdate = async () => {
     try {
-      const locationsRef = ref(database, `Journal/${currentUserId}/Locations/`);
+      const locationsRef = ref(database, `Journal/${userID}/Locations/`);
       onValue(locationsRef, (snapshot) => {
         const data = snapshot.val();
         console.log("data: ");

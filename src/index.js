@@ -21,13 +21,19 @@ import App from "App";
 // Material Dashboard 2 React Context Provider
 import { MaterialUIControllerProvider } from "context";
 
+//UserProvider
+import { UserProvider } from "layouts/authentication/UserProvider";
+
 const container = document.getElementById("app");
 const root = createRoot(container);
 
 root.render(
+  
   <BrowserRouter>
+   <UserProvider>
     <MaterialUIControllerProvider>
       <App />
     </MaterialUIControllerProvider>
+    </UserProvider>
   </BrowserRouter>
 );

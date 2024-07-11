@@ -1,9 +1,10 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useContext } from "react";
 import "./JournalView.css";
 import { database } from "./firebaseConfig"; // Adjust the import path accordingly
 import { onValue, ref } from "firebase/database";
-import {currentUserId} from "../../authentication/globalCredentials";
 
+// Global User Credentials from UserProvider
+import { UserContext } from "layouts/authentication/UserProvider";
 
 /**
  * 
@@ -14,6 +15,9 @@ const JournalView = () => {
   const [entries, setEntries] = useState([]);
   const [selectedEntry, setSelectedEntry] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+
+  //Global Current User Id
+  const { userID, setUserID } = useContext(UserContext);
 
   const bottomRef = useRef(null);
 
@@ -29,7 +33,7 @@ const JournalView = () => {
 
   useEffect(() => {
     const getJournalEntries = () => {
-      onValue(ref(database, `Journal/${currentUserId}/JournalEntry/`), (snapshot) => {
+      onValue(ref(database, `Journal/${userID}/JournalEntry/`), (snapshot) => {
         const data = snapshot.val();
         if (data) {
           const entriesArray = Object.values(data).map((entry, index) => ({

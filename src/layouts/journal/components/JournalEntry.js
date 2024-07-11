@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import "./JournalEntry.css";
 
 // Imports needed for Firebase
 import { ref, set, onValue } from 'firebase/database';
 import { database } from "./firebaseConfig"; // Adjust the import path accordingly
-import {currentUserId} from "../../authentication/globalCredentials";
+
+// Global User Credentials from UserProvider
+import { UserContext } from "layouts/authentication/UserProvider";
 
 
 const JournalEntryForm = () => {
@@ -15,6 +17,9 @@ const JournalEntryForm = () => {
   const [flyUsed, setFlyUsed] = useState("");
   const [journalEntry, setJournalEntry] = useState("");
   var nextJournalId = 0;
+
+   //Global Current User Id
+   const { userID, setUserID } = useContext(UserContext);
 
   const locations = ["River A", "River B", "Lake C", "Pond D", "Stream E"];
 
@@ -28,7 +33,7 @@ const JournalEntryForm = () => {
       var highestKey = 0;
   
       // 1 is the user id
-      onValue(ref(database, 'Journal/' + currentUserId + '/JournalEntry'), (snapshot) => {
+      onValue(ref(database, 'Journal/' + userID + '/JournalEntry'), (snapshot) => {
         const data = snapshot.val();
         console.log(data);
   
@@ -55,8 +60,8 @@ const JournalEntryForm = () => {
         nextJournalId = nextId;
 
         //The JournalID is where the increased id number will go 
-        set(ref(database, 'Journal/'+currentUserId+'/JournalEntry/' + nextJournalId), {
-          UserId: currentUserId,
+        set(ref(database, 'Journal/'+userID+'/JournalEntry/' + nextJournalId), {
+          UserId: userID,
           Location: location,
           Date: date,  
           FishCount: fishCount,
