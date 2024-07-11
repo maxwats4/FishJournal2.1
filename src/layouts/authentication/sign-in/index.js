@@ -13,7 +13,7 @@ Coded by www.creative-tim.com
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
 
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 
 // react-router-dom components
 import { Link } from "react-router-dom";
@@ -53,8 +53,78 @@ function Basic() {
 
   const handleSetRememberMe = () => setRememberMe(!rememberMe);
 
-  //Global Current User Id
+  //Global Current User Id for rest of program 
   const { userID, setUserID } = useContext(UserContext);
+
+  //imputed Username and password variables
+  const [inputUsername, setInputUsername] = useState(null);
+  const [inputPassword, setInputPassword] = useState(null);
+
+  // array of all users id, username, and password
+  const [userCredentials, setUserCredentials] = useState([]);
+
+  // true is authentication works, false otherwise
+  const [accessGranted, setAccessGranted] = useState(false);
+
+  useEffect(() => {
+    // gets all user's id, username, password fron Firebase and puts it into a usersArray
+    onValue(ref(database, 'Journal/'), (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const users = Object.entries(data).map(([userID, userData]) => {
+          
+          if (userData.Info && userData.Info.username && userData.Info.password) {
+            return {
+              userID,
+              username: userData.Info.username,
+              password: userData.Info.password,
+            };
+          }
+          return null;
+        }).filter(user => user !== null);
+        
+        setUserCredentials(users);
+        console.log("user array successfully loaded");
+        
+      }
+    });
+  }, []);
+
+
+   // Event handler to update state on username input change
+   const handleUsernameChange = (event) => {
+    setInputUsername(event.target.value);
+  };
+
+  // Event handler to update state on password input change
+  const handlePasswordChange = (event) => {
+    setInputPassword(event.target.value);
+  };
+
+  // checks inputed credentials agaist known users, if authentication is correct, then global userID is updated
+  function checkCredentials(){
+    for (const user in userCredentials) {
+
+     if(userCredentials[user].username == inputUsername && userCredentials[user].password == inputPassword ){
+        console.log("Validated:", userCredentials[user].userID);
+        setUserID(userCredentials[user].userID);
+     }
+    }
+
+  }
+  // Event handler for the sign-in button click
+  const handleSignIn = () => {
+    console.log('Username:', inputUsername);
+    console.log('Password:', inputPassword);
+    console.log(userCredentials);
+    checkCredentials();
+
+    
+
+  
+};
+
+  
 
   return (
     <BasicLayout image={bgImage}>
@@ -94,10 +164,10 @@ function Basic() {
         <MDBox pt={4} pb={3} px={3}>
           <MDBox component="form" role="form">
             <MDBox mb={2}>
-              <MDInput type="email" label="Email" fullWidth />
+              <MDInput type="text" label="Username" fullWidth value={inputUsername} onChange={handleUsernameChange}/>
             </MDBox>
             <MDBox mb={2}>
-              <MDInput type="password" label="Password" fullWidth />
+              <MDInput type="password" label="Password" fullWidth  value={inputPassword} onChange={handlePasswordChange}/>
             </MDBox>
             <MDBox display="flex" alignItems="center" ml={-1}>
               <Switch checked={rememberMe} onChange={handleSetRememberMe} />
@@ -112,7 +182,7 @@ function Basic() {
               </MDTypography>
             </MDBox>
             <MDBox mt={4} mb={1}>
-              <MDButton variant="gradient" color="info" fullWidth>
+              <MDButton variant="gradient" color="info" fullWidth onClick={handleSignIn}>
                 sign in
               </MDButton>
             </MDBox>

@@ -21,6 +21,7 @@ import React, { createContext, useState } from 'react';
 const UserContext = createContext();
 
 const UserProvider = ({ children }) => {
+  // when sign in is setup - change this to null
   const [userID, setUserID] = useState(123456);
 
   return (
