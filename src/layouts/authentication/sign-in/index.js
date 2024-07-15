@@ -16,7 +16,7 @@ Coded by www.creative-tim.com
 import { useState, useContext, useEffect } from "react";
 
 // react-router-dom components
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 // @mui material components
 import Card from "@mui/material/Card";
@@ -52,6 +52,8 @@ function Basic() {
   const [rememberMe, setRememberMe] = useState(false);
 
   const handleSetRememberMe = () => setRememberMe(!rememberMe);
+
+  const navigate = useNavigate();
 
   //Global Current User Id for rest of program 
   const { userID, setUserID } = useContext(UserContext);
@@ -108,8 +110,10 @@ function Basic() {
      if(userCredentials[user].username == inputUsername && userCredentials[user].password == inputPassword ){
         console.log("Validated:", userCredentials[user].userID);
         setUserID(userCredentials[user].userID);
-     }
+        navigate('/Dashboard');
+     }// need to add an else clause that will display a message if the credentials doesnt add up. 
     }
+
 
   }
   // Event handler for the sign-in button click
