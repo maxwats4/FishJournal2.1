@@ -58,7 +58,7 @@ const LocationMap = () => {
   const deleteLocation = async (lat, long) => {
 
     const refreshPage = () => {
-      window.location.reload();
+      window.location.reload(true);
     };
 
     try {
