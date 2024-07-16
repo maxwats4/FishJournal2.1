@@ -110,12 +110,12 @@ function Basic() {
      if(userCredentials[user].username == inputUsername && userCredentials[user].password == inputPassword ){
         console.log("Validated:", userCredentials[user].userID);
         setUserID(userCredentials[user].userID);
-        navigate('/Dashboard');
+        navigate('/Map');
      }// need to add an else clause that will display a message if the credentials doesnt add up. 
     }
 
-
   }
+
   // Event handler for the sign-in button click
   const handleSignIn = () => {
     console.log('Username:', inputUsername);

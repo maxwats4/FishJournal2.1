@@ -24,6 +24,7 @@ import MDBox from "components/MDBox";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
+import InfoContainer from "./components/InfoContainer";
 
 import React from "react";
 
@@ -38,6 +39,7 @@ function Map() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
+      <InfoContainer />
       <MDBox pt={6} pb={3}>
         <Container>
           <PageSwitch />

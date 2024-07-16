@@ -41,9 +41,7 @@ function Journal() {
     <DashboardLayout>
       <DashboardNavbar />
       <MDBox pt={6} pb={3}>
-        <Container>
           <JournalView />
-        </Container>
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <JournalEntry />

@@ -161,7 +161,9 @@ const ClickMap = () => {
   };
 
   return (
+
     <MapContainer center={[44.423176, -111.372181]} zoom={6}>
+      
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
       {marker && (
