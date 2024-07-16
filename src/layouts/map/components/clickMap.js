@@ -24,12 +24,12 @@ const ClickMap = () => {
   const [currentWindSpeed, setCurrentWindSpeed] = useState(0);
 
   //Global Current User Id
-  const { userID, setUserID } = useContext(UserContext);
+  const { userID } = useContext(UserContext);
 
   // map saving variables
   const [lat, setLat] = useState(0); 
   const [long, setLong] = useState(0);
-  const [name, setName] = useState("name");
+  
 
   /**
    * Returns next map ID for the user

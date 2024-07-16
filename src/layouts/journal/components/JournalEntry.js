@@ -19,7 +19,7 @@ const JournalEntryForm = () => {
   var nextJournalId = 0;
 
    //Global Current User Id
-   const { userID, setUserID } = useContext(UserContext);
+   const { userID } = useContext(UserContext);
 
   const locations = ["River A", "River B", "Lake C", "Pond D", "Stream E"];
 

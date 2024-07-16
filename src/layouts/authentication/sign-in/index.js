@@ -56,7 +56,7 @@ function Basic() {
   const navigate = useNavigate();
 
   //Global Current User Id for rest of program 
-  const { userID, setUserID } = useContext(UserContext);
+  const { setUserID } = useContext(UserContext);
 
   //imputed Username and password variables
   const [inputUsername, setInputUsername] = useState(null);
@@ -66,7 +66,7 @@ function Basic() {
   const [userCredentials, setUserCredentials] = useState([]);
 
   // true is authentication works, false otherwise
-  const [accessGranted, setAccessGranted] = useState(false);
+  //const [accessGranted, setAccessGranted] = useState(false);
 
   useEffect(() => {
     // gets all user's id, username, password fron Firebase and puts it into a usersArray

@@ -21,19 +21,19 @@ const customIconRed = new Icon({
   iconSize: [38, 38], // size of the icon
 });
 
-// Green Marker
-const customIconGreen = new Icon({
-  // iconUrl: "https://cdn-icons-png.flaticon.com/512/447/447031.png",
-  iconUrl: require("./icons/GreenMarker.png"),
-  iconSize: [38, 38], // size of the icon
-});
+// // Green Marker
+// const customIconGreen = new Icon({
+//   // iconUrl: "https://cdn-icons-png.flaticon.com/512/447/447031.png",
+//   iconUrl: require("./icons/GreenMarker.png"),
+//   iconSize: [38, 38], // size of the icon
+// });
 
-// Orange Marker
-const customIconOrange = new Icon({
-  // iconUrl: "https://cdn-icons-png.flaticon.com/512/447/447031.png",
-  iconUrl: require("./icons/OrangeMarker.png"),
-  iconSize: [38, 38], // size of the icon
-});
+// // Orange Marker
+// const customIconOrange = new Icon({
+//   // iconUrl: "https://cdn-icons-png.flaticon.com/512/447/447031.png",
+//   iconUrl: require("./icons/OrangeMarker.png"),
+//   iconSize: [38, 38], // size of the icon
+// });
 
 // custom cluster icon
 const createClusterCustomIcon = function (cluster) {
@@ -49,7 +49,7 @@ const LocationMap = () => {
   const [updatedMarkers, setUpdatedMarkers] = useState([]);
 
   //Global Current User Id
-  const { userID, setUserID } = useContext(UserContext);
+  const { userID } = useContext(UserContext);
 
 
 // problem: for some reason when the map rerenders after deleting the location, the UpdatedMarkers is empty causing it to crash. 

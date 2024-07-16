@@ -116,6 +116,7 @@ function Cover() {
     getNextUserId()
       .then((nextUserId) => {
 
+        checkPasswords();
         //The JournalID is where the increased id number will go 
         set(ref(database, 'Journal/' + nextUserId + '/Info'), {
           username: username,

@@ -17,7 +17,7 @@ const JournalView = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
   //Global Current User Id
-  const { userID, setUserID } = useContext(UserContext);
+  const { userID } = useContext(UserContext);
 
   const bottomRef = useRef(null);
 

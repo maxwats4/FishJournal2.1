@@ -34,7 +34,7 @@ import JournalView from "./components/JournalView.js";
 import JournalEntry from "./components/JournalEntry";
 
 // react-bootstrap components
-import { Container } from "react-bootstrap";
+//import { Container } from "react-bootstrap";
 
 function Journal() {
   return (
