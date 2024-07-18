@@ -1,4 +1,4 @@
 [[redirects]]
   from = "/*"
-  to = "/Map"
+  to = "/index.html"
   status = 200
