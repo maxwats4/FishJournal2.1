@@ -1,18 +1,3 @@
-/**
-=========================================================
-* Material Dashboard 2 React - v2.2.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
 import { useState, useContext, useEffect } from "react";
 
 // react-router-dom components
@@ -59,22 +44,21 @@ function Basic() {
   const { setUserID } = useContext(UserContext);
 
   //imputed Username and password variables
-  const [inputUsername, setInputUsername] = useState(null);
-  const [inputPassword, setInputPassword] = useState(null);
+  const [inputUsername, setInputUsername] = useState("");
+  const [inputPassword, setInputPassword] = useState("");
 
   // array of all users id, username, and password
   const [userCredentials, setUserCredentials] = useState([]);
 
-  // true is authentication works, false otherwise
-  //const [accessGranted, setAccessGranted] = useState(false);
+  // state for error message
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    // gets all user's id, username, password fron Firebase and puts it into a usersArray
+    // gets all user's id, username, password from Firebase and puts it into a usersArray
     onValue(ref(database, 'Journal/'), (snapshot) => {
       const data = snapshot.val();
       if (data) {
         const users = Object.entries(data).map(([userID, userData]) => {
-          
           if (userData.Info && userData.Info.username && userData.Info.password) {
             return {
               userID,
@@ -84,17 +68,15 @@ function Basic() {
           }
           return null;
         }).filter(user => user !== null);
-        
+
         setUserCredentials(users);
         console.log("user array successfully loaded");
-        
       }
     });
   }, []);
 
-
-   // Event handler to update state on username input change
-   const handleUsernameChange = (event) => {
+  // Event handler to update state on username input change
+  const handleUsernameChange = (event) => {
     setInputUsername(event.target.value);
   };
 
@@ -103,18 +85,20 @@ function Basic() {
     setInputPassword(event.target.value);
   };
 
-  // checks inputed credentials agaist known users, if authentication is correct, then global userID is updated
-  function checkCredentials(){
-    for (const user in userCredentials) {
+  // checks inputed credentials against known users, if authentication is correct, then global userID is updated
+  const checkCredentials = () => {
+    const user = userCredentials.find(
+      (user) => user.username === inputUsername && user.password === inputPassword
+    );
 
-     if(userCredentials[user].username == inputUsername && userCredentials[user].password == inputPassword ){
-        console.log("Validated:", userCredentials[user].userID);
-        setUserID(userCredentials[user].userID);
-        navigate('/Map');
-     }// need to add an else clause that will display a message if the credentials doesnt add up. 
+    if (user) {
+      console.log("Validated:", user.userID);
+      setUserID(user.userID);
+      navigate('/Map');
+    } else {
+      setErrorMessage("Username and password do not match");
     }
-
-  }
+  };
 
   // Event handler for the sign-in button click
   const handleSignIn = () => {
@@ -122,13 +106,7 @@ function Basic() {
     console.log('Password:', inputPassword);
     console.log(userCredentials);
     checkCredentials();
-
-    
-
-  
-};
-
-  
+  };
 
   return (
     <BasicLayout image={bgImage}>
@@ -168,10 +146,10 @@ function Basic() {
         <MDBox pt={4} pb={3} px={3}>
           <MDBox component="form" role="form">
             <MDBox mb={2}>
-              <MDInput type="text" label="Username" fullWidth value={inputUsername} onChange={handleUsernameChange}/>
+              <MDInput type="text" label="Username" fullWidth value={inputUsername} onChange={handleUsernameChange} />
             </MDBox>
             <MDBox mb={2}>
-              <MDInput type="password" label="Password" fullWidth  value={inputPassword} onChange={handlePasswordChange}/>
+              <MDInput type="password" label="Password" fullWidth value={inputPassword} onChange={handlePasswordChange} />
             </MDBox>
             <MDBox display="flex" alignItems="center" ml={-1}>
               <Switch checked={rememberMe} onChange={handleSetRememberMe} />
@@ -185,6 +163,13 @@ function Basic() {
                 &nbsp;&nbsp;Remember me
               </MDTypography>
             </MDBox>
+            {errorMessage && (
+              <MDBox mt={2}>
+                <MDTypography variant="caption" color="error">
+                  {errorMessage}
+                </MDTypography>
+              </MDBox>
+            )}
             <MDBox mt={4} mb={1}>
               <MDButton variant="gradient" color="info" fullWidth onClick={handleSignIn}>
                 sign in

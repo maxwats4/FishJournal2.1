@@ -46,6 +46,10 @@ function Cover() {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
 
+  //success message
+  const [successMessage, setSuccessMessage] = useState("");
+
+
   // Event handler to update state on username input change
   const handleUsernameChange = (event) => {
     setUsername(event.target.value);
@@ -71,82 +75,72 @@ function Cover() {
     setName(event.target.value);
   };
 
-  
-  //Functions to make sure both passwords match up
-  function checkPasswords(){
-
-    if(password == secondPassword){
+  // Functions to make sure both passwords match up
+  function checkPasswords() {
+    if (password === secondPassword) {
       return true;
-    }else{
+    } else {
       // add an error message if this comes back false
       return false;
     }
-    
   }
 
-  //Returns the next available UserID
+  // Returns the next available UserID
   function getNextUserId() {
     return new Promise((resolve, reject) => {
       var highestKey = 0;
-  
-      // 1 is the user id
       onValue(ref(database, 'Journal/'), (snapshot) => {
         const data = snapshot.val();
         console.log(data);
-  
+
         for (const key in data) {
           if (parseInt(key) >= highestKey) {
             highestKey = parseInt(key);
           }
         }
-  
-        var nextKey = highestKey +1;
+
+        var nextKey = highestKey + 1;
         console.log("Next highest Key: " + nextKey);
-        resolve(highestKey + 1);
+        resolve(nextKey);
       }, (error) => {
         reject(error);
       });
     });
   }
 
-
   const createNewUser = (e) => {
     e.preventDefault();
     // Gets and sets the next highest ID
     getNextUserId()
       .then((nextUserId) => {
-
-        checkPasswords();
-        //The JournalID is where the increased id number will go 
+        if (!checkPasswords()) {
+          // Handle password mismatch error here
+          return;
+        }
         set(ref(database, 'Journal/' + nextUserId + '/Info'), {
           username: username,
           password: password,
           name: name, 
           email: email,
-          
         })
         .then(() => {
           console.log("Data submitted successfully! New User Created");
-    
+          setSuccessMessage("New User Created! Click Sign In to continue.");
+          // Reset form fields after submission
+          setUsername('');
+          setPassword('');
+          setSecondPassword('');
+          setName('');
+          setEmail('');
         })
         .catch((error) => {
           console.error("Error submitting data:", error);
         });
-
-        // Reset form fields after submission
-        setUsername('');
-        setPassword('');
-        setSecondPassword('');
-        setName('');
-        setEmail('');
-        })
+      })
       .catch((error) => {
-        console.error("Error retrieving next journal ID:", error);
+        console.error("Error retrieving next user ID:", error);
       });   
   };
-
-
-
 
   return (
     <CoverLayout image={bgImage}>
@@ -172,19 +166,54 @@ function Cover() {
         <MDBox pt={4} pb={3} px={3}>
           <MDBox component="form" role="form">
             <MDBox mb={2}>
-              <MDInput type="text" label="Name" variant="standard" fullWidth  onChange={handleNameChange}/>
+              <MDInput 
+                type="text" 
+                label="Name" 
+                variant="standard" 
+                fullWidth  
+                value={name}
+                onChange={handleNameChange}
+              />
             </MDBox>
             <MDBox mb={2}>
-              <MDInput type="email" label="Email" variant="standard" fullWidth onChange={handleEmailChange}/>
+              <MDInput 
+                type="email" 
+                label="Email" 
+                variant="standard" 
+                fullWidth 
+                value={email}
+                onChange={handleEmailChange}
+              />
             </MDBox>
             <MDBox mb={2}>
-              <MDInput type="text" label="Username" variant="standard" fullWidth onChange={handleUsernameChange}/>
+              <MDInput 
+                type="text" 
+                label="Username" 
+                variant="standard" 
+                fullWidth 
+                value={username}
+                onChange={handleUsernameChange}
+              />
             </MDBox>
             <MDBox mb={2}>
-              <MDInput type="password" label="Password" variant="standard" fullWidth onChange={handlePasswordChange}/>
+              <MDInput 
+                type="password" 
+                label="Password" 
+                variant="standard" 
+                fullWidth 
+                value={password}
+                onChange={handlePasswordChange}
+              />
             </MDBox>
             <MDBox mb={2}>
-              <MDInput type="password" label="Re-Enter Password" variant="standard" fullWidth onChange={handleSecondPasswordChange}/>
+              <MDInput 
+                type="password" 
+                label="Re-Enter Password" 
+                variant="standard" 
+                fullWidth 
+                value={secondPassword}
+                onChange={handleSecondPasswordChange}
+              />
             </MDBox>
             <MDBox display="flex" alignItems="center" ml={-1}>
               <Checkbox />
@@ -207,6 +236,15 @@ function Cover() {
                 Terms and Conditions
               </MDTypography>
             </MDBox>
+            { successMessage && (
+              <MDBox mt={2}>
+              <MDTypography variant="caption" color="success" fontWeight="bold" textTransform="capitalized">
+                {successMessage}
+              </MDTypography>
+            </MDBox>
+            )
+
+            }
             <MDBox mt={4} mb={1}>
               <MDButton variant="gradient" color="info" fullWidth onClick={createNewUser}>
                 Sign Up

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import "./JournalEntry.css";
 
 // Imports needed for Firebase
@@ -8,7 +8,6 @@ import { database } from "./firebaseConfig"; // Adjust the import path according
 // Global User Credentials from UserProvider
 import { UserContext } from "layouts/authentication/UserProvider";
 
-
 const JournalEntryForm = () => {
   // form variables
   const [location, setLocation] = useState("");
@@ -16,33 +15,28 @@ const JournalEntryForm = () => {
   const [fishCount, setFishCount] = useState(0);
   const [flyUsed, setFlyUsed] = useState("");
   const [journalEntry, setJournalEntry] = useState("");
+  const [locations, setLocations] = useState([]); // Use state to manage locations
   var nextJournalId = 0;
 
-   //Global Current User Id
-   const { userID } = useContext(UserContext);
+  // Global Current User Id
+  const { userID } = useContext(UserContext);
 
-  const locations = ["River A", "River B", "Lake C", "Pond D", "Stream E"];
-
-  /**
-   * Code for Firebase DB
-   */
-
-  //Returns the next available journal id
+  // Returns the next available journal id
   function getNextJournalId() {
     return new Promise((resolve, reject) => {
       var highestKey = 0;
-  
+
       // 1 is the user id
       onValue(ref(database, 'Journal/' + userID + '/JournalEntry'), (snapshot) => {
         const data = snapshot.val();
         console.log(data);
-  
+
         for (const key in data) {
           if (parseInt(key) >= highestKey) {
             highestKey = parseInt(key);
           }
         }
-  
+
         console.log("highest Key: " + highestKey);
         resolve(highestKey + 1);
       }, (error) => {
@@ -51,7 +45,6 @@ const JournalEntryForm = () => {
     });
   }
 
-
   const handleSubmit = (e) => {
     e.preventDefault();
     // Gets and sets the next highest ID
@@ -59,18 +52,17 @@ const JournalEntryForm = () => {
       .then((nextId) => {
         nextJournalId = nextId;
 
-        //The JournalID is where the increased id number will go 
-        set(ref(database, 'Journal/'+userID+'/JournalEntry/' + nextJournalId), {
+        // The JournalID is where the increased id number will go 
+        set(ref(database, 'Journal/' + userID + '/JournalEntry/' + nextJournalId), {
           UserId: userID,
           Location: location,
-          Date: date,  
+          Date: date,
           FishCount: fishCount,
           FlyUsed: flyUsed,
-          JournalEntry: journalEntry, 
+          JournalEntry: journalEntry,
         })
         .then(() => {
           console.log("Data submitted successfully!");
-    
         })
         .catch((error) => {
           console.error("Error submitting data:", error);
@@ -82,15 +74,27 @@ const JournalEntryForm = () => {
         setFishCount(0);
         setFlyUsed("");
         setJournalEntry("");
-        })
+      })
       .catch((error) => {
         console.error("Error retrieving next journal ID:", error);
       });
-   
-
-    
-   
   };
+
+  useEffect(() => {
+    const getLocations = () => {
+      onValue(ref(database, `Journal/${userID}/Locations/`), (snapshot) => {
+        const data = snapshot.val();
+        console.log("data:");
+        console.log(data);
+        if (data) {
+          const locationsArray = Object.values(data).map(entry => entry.LocationName);
+          setLocations(locationsArray); // Update the locations state
+        }
+      });
+    };
+
+    getLocations();
+  }, [userID]); // Add dependencies
 
   return (
     <div className="journal-entry-form">

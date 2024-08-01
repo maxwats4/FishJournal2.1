@@ -38,7 +38,7 @@ const JournalView = () => {
         if (data) {
           const entriesArray = Object.values(data).map((entry, index) => ({
             id: index + 1, // Assuming you don't have an id in your JSON, generate one
-            title: `Journal Entry on ${entry.Date}`,
+            title: `${entry.Location} on ${entry.Date}`,
             content: (
               <>
                 <div>Location: {entry.Location}</div>
