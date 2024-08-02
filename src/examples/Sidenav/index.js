@@ -83,62 +83,67 @@ function Sidenav({ brand, brandName, routes, ...rest }) {
     return () => window.removeEventListener("resize", handleMiniSidenav);
   }, [dispatch, location]);
 
-  // Render all the routes from the routes.js (All the visible items on the Sidenav)
-  const renderRoutes = routes.map(({ type, name, icon, title, noCollapse, key, href, route }) => {
-    let returnValue;
+  // Filter out the routes you don't want to display in the Sidenav
+const filteredRoutes = routes.filter(
+  ({ route }) => route !== "/authentication/sign-in" && route !== "/authentication/sign-up"
+);
 
-    if (type === "collapse") {
-      returnValue = href ? (
-        <Link
-          href={href}
-          key={key}
-          target="_blank"
-          rel="noreferrer"
-          sx={{ textDecoration: "none" }}
-        >
-          <SidenavCollapse
-            name={name}
-            icon={icon}
-            active={key === collapseName}
-            noCollapse={noCollapse}
-          />
-        </Link>
-      ) : (
-        <NavLink key={key} to={route}>
-          <SidenavCollapse name={name} icon={icon} active={key === collapseName} />
-        </NavLink>
-      );
-    } else if (type === "title") {
-      returnValue = (
-        <MDTypography
-          key={key}
-          color={textColor}
-          display="block"
-          variant="caption"
-          fontWeight="bold"
-          textTransform="uppercase"
-          pl={3}
-          mt={2}
-          mb={1}
-          ml={1}
-        >
-          {title}
-        </MDTypography>
-      );
-    } else if (type === "divider") {
-      returnValue = (
-        <Divider
-          key={key}
-          light={
-            (!darkMode && !whiteSidenav && !transparentSidenav) ||
-            (darkMode && !transparentSidenav && whiteSidenav)
-          }
+// Render all the routes from the routes.js (All the visible items on the Sidenav)
+const renderRoutes = filteredRoutes.map(({ type, name, icon, title, noCollapse, key, href, route }) => {
+  let returnValue;
+
+  if (type === "collapse") {
+    returnValue = href ? (
+      <Link
+        href={href}
+        key={key}
+        target="_blank"
+        rel="noreferrer"
+        sx={{ textDecoration: "none" }}
+      >
+        <SidenavCollapse
+          name={name}
+          icon={icon}
+          active={key === collapseName}
+          noCollapse={noCollapse}
         />
-      );
-    }
+      </Link>
+    ) : (
+      <NavLink key={key} to={route}>
+        <SidenavCollapse name={name} icon={icon} active={key === collapseName} />
+      </NavLink>
+    );
+  } else if (type === "title") {
+    returnValue = (
+      <MDTypography
+        key={key}
+        color={textColor}
+        display="block"
+        variant="caption"
+        fontWeight="bold"
+        textTransform="uppercase"
+        pl={3}
+        mt={2}
+        mb={1}
+        ml={1}
+      >
+        {title}
+      </MDTypography>
+    );
+  } else if (type === "divider") {
+    returnValue = (
+      <Divider
+        key={key}
+        light={
+          (!darkMode && !whiteSidenav && !transparentSidenav) ||
+          (darkMode && !transparentSidenav && whiteSidenav)
+        }
+      />
+    );
+  }
 
-    return returnValue;
-  });
+  return returnValue;
+});
 
   return (
     <SidenavRoot
