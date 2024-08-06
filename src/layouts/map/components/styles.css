@@ -162,13 +162,14 @@
     padding: 8px 16px; /* Smaller padding for a smaller button */
     border: none;
     border-radius: 4px;
-    background: linear-gradient(45deg, #1509ee, #071177);
+    background: linear-gradient(45deg, #e2110a, #d68f0c);
     color: white;
     font-size: 14px; /* Slightly smaller font size */
     font-weight: bold;
     cursor: pointer;
     box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
+    margin: 2px; /* Added margin for outside padding */
   }
   
   .delete-btn:hover {
@@ -178,6 +179,33 @@
   
   .delete-btn:active {
     background: linear-gradient(45deg, #ff4b2b, #ff416c);
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+    transform: translateY(1px);
+  }
+
+  /*Directions button CSS*/
+
+  .directions-btn {
+    padding: 8px 16px; /* Smaller padding for a smaller button */
+    border: none;
+    border-radius: 4px;
+    background: linear-gradient(45deg, #1509ee, #071177);
+    color: white;
+    font-size: 14px; /* Slightly smaller font size */
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    margin: 2px; /* Added margin for outside padding */
+  }
+  
+  .directions-btn:hover {
+    background: linear-gradient(45deg, #09752f, #053616);
+    box-shadow: 0 5px 7px rgba(0, 0, 0, 0.15);
+  }
+  
+  .directions-btn:active {
+    background: linear-gradient(45deg, #09752f, #053616);
     box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
     transform: translateY(1px);
   }

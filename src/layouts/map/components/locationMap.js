@@ -93,6 +93,11 @@ const LocationMap = () => {
     }
   };
   
+  // Function to open Google Maps with directions
+  const openGoogleMaps = (lat, long) => {
+    const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${long}`;
+    window.open(googleMapsUrl, '_blank');
+  };
 
   /**
    * Code for fetching and updating map with DB locations
@@ -156,6 +161,10 @@ const LocationMap = () => {
                   Current Temp: {location.getLocationTemp()} degrees
                   <br />
                   Current Wind: {location.getLocationWind()} MpH
+                  <button type="button" className="directions-btn" onClick={() => openGoogleMaps(location.getLatitude(), location.getLongitude())}> 
+                   Get Directions
+                  </button>
+                  <br />
                   <button type="button" className="delete-btn" onClick={() => deleteLocation(location.getLatitude(), location.getLongitude())}> 
                    Delete Location
                   </button>
