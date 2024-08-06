@@ -99,6 +99,19 @@ const LocationMap = () => {
     window.open(googleMapsUrl, '_blank');
   };
 
+  
+  const copyLocation = (lat, long) => {
+
+  const googleMapsLink = `https://www.google.com/maps?q=${lat},${long}`;
+
+  navigator.clipboard.writeText(googleMapsLink).then(() => {
+    alert('Location copied to clipboard! Share this link: ' + googleMapsLink);
+  }).catch(err => {
+    console.error('Failed to copy: ', err);
+  });
+
+  }
+
   /**
    * Code for fetching and updating map with DB locations
    */
@@ -147,6 +160,8 @@ const LocationMap = () => {
           );
 
           Promise.all(weatherPromises).then((updatedLocations) => {
+
+           
             const markers = updatedLocations.map((location) => ({
               geocode: [location.getLatitude(), location.getLongitude()],
               popUp: (
@@ -165,9 +180,14 @@ const LocationMap = () => {
                    Get Directions
                   </button>
                   <br />
+                  <button type="button" className="copy-location-btn" onClick={() => copyLocation(location.getLatitude(), location.getLongitude())}> 
+                   Copy to Share Location
+                  </button>
+                  <br/>
                   <button type="button" className="delete-btn" onClick={() => deleteLocation(location.getLatitude(), location.getLongitude())}> 
                    Delete Location
                   </button>
+                
                 </p>
               ),
               Icon: customIconRed,
