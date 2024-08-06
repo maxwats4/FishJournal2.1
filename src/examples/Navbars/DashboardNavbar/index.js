@@ -16,7 +16,7 @@ Coded by www.creative-tim.com
 import { useState, useEffect } from "react";
 
 // react-router components
-import { useLocation, Link } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 // prop-types is a library for typechecking of props.
 import PropTypes from "prop-types";
@@ -58,7 +58,19 @@ function DashboardNavbar({ absolute, light, isMini }) {
   const [controller, dispatch] = useMaterialUIController();
   const { miniSidenav, transparentNavbar, fixedNavbar, openConfigurator, darkMode } = controller;
   const [openMenu, setOpenMenu] = useState(false);
+  const [openAccount, setOpenAccount] = useState(false);
+
   const route = useLocation().pathname.split("/").slice(1);
+
+  // Logout Functions and variables
+  const navigate = useNavigate();  // Use useNavigate hook for navigation
+  
+  const handleLogout = () => {
+    // Perform any logout logic here (like clearing tokens, etc.)
+    navigate('/authentication/sign-in/basic');  // Navigate to sign-in page
+  };
+
+
 
   useEffect(() => {
     // Setting the navbar type
@@ -90,6 +102,9 @@ function DashboardNavbar({ absolute, light, isMini }) {
   const handleConfiguratorOpen = () => setOpenConfigurator(dispatch, !openConfigurator);
   const handleOpenMenu = (event) => setOpenMenu(event.currentTarget);
   const handleCloseMenu = () => setOpenMenu(false);
+  const handleOpenAccount = (event) => setOpenAccount(event.currentTarget);
+  const handleCloseAccount = () => setOpenAccount(false);
+  
 
   // Render the notifications menu
   const renderMenu = () => (
@@ -107,6 +122,24 @@ function DashboardNavbar({ absolute, light, isMini }) {
       <NotificationItem icon={<Icon>email</Icon>} title="Check new messages" />
       <NotificationItem icon={<Icon>podcasts</Icon>} title="Manage Podcast sessions" />
       <NotificationItem icon={<Icon>shopping_cart</Icon>} title="Payment successfully completed" />
+    </Menu>
+  );
+
+  // Render the notifications menu
+  const renderAccount = () => (
+    <Menu
+      anchorEl={openAccount}
+      anchorReference={null}
+      anchorOrigin={{
+        vertical: "bottom",
+        horizontal: "left",
+      }}
+      open={Boolean(openAccount)}
+      onClose={handleCloseAccount}
+      sx={{ mt: 2 }}
+    >
+      <NotificationItem icon={<Icon>account_circle</Icon>} title="Logout" onClick={handleLogout} />
+      
     </Menu>
   );
 
@@ -139,11 +172,25 @@ function DashboardNavbar({ absolute, light, isMini }) {
               <MDInput label="Search here" />
             </MDBox>
             <MDBox color={light ? "white" : "inherit"}>
-              <Link to="/authentication/sign-in/basic">
+              {/* <Link to="/authentication/sign-in/basic">
                 <IconButton sx={navbarIconButton} size="small" disableRipple>
                   <Icon sx={iconsStyle}>account_circle</Icon>
+                  
                 </IconButton>
-              </Link>
+              </Link> */}
+              <IconButton
+                size="small"
+                disableRipple
+                color="inherit"
+                sx={navbarIconButton}
+                aria-controls="notification-menu"
+                aria-haspopup="true"
+                variant="contained"
+                onClick={handleOpenAccount}
+              >
+                <Icon sx={iconsStyle}>account_circle</Icon>
+              </IconButton>
+              {renderAccount()}
               <IconButton
                 size="small"
                 disableRipple
