@@ -12,13 +12,18 @@ import MDBox from "components/MDBox";
 // Material Dashboard 2 React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import Footer from "examples/Footer";
+import Footer from "examples/Footer"
 
 // Custom Components
 import ComplexStatisticsCard from "examples/Cards/StatisticsCards/ComplexStatisticsCard";
 
+// import calendar
+import Calendar from './components/calendar';
+
 // Mock Data
 const suggestions = ['Lake Pend Oreille', 'Snake River', 'Bear Lake', 'Priest Lake'];
+
+
 
 function InfoDashboard() {
   const [searchQuery, setSearchQuery] = React.useState('');
@@ -176,6 +181,13 @@ function InfoDashboard() {
                 />
               </MDBox>
             </Grid>
+          </Grid>
+        </Box>
+
+        {/* Calendar */}
+        <Box sx={{ p: 2, border: '1px solid #ddd', borderRadius: '8px', backgroundColor: '#f5f5f5' }}>
+          <Grid container spacing={2} justifyContent="center">
+           <Calendar/>
           </Grid>
         </Box>
 

@@ -1,0 +1,86 @@
+.calendar {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+    padding: 16px;
+    margin: 16px 0;
+    max-width: 100%; /* Ensure the calendar fits the width of the container */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for modern look */
+  }
+  
+  .calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  
+  .calendar-nav-button {
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    color: #007bff; /* Modern blue color for buttons */
+  }
+  
+  .calendar-month-year {
+    font-weight: bold;
+    font-size: 16px;
+  }
+  
+  .calendar-days {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+  
+  .calendar-day-header,
+  .calendar-date {
+    flex: 1 0 14.28%; /* 7 days a week, each taking 1/7th of the width */
+    text-align: center;
+    padding: 8px;
+    box-sizing: border-box;
+    font-size: 14px; /* Slightly smaller font for a cleaner look */
+  }
+  
+  .calendar-day-header {
+    font-weight: bold;
+  }
+  
+  .calendar-week {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  .calendar-date {
+    margin: 2px;
+    border-radius: 4px;
+    color: #333;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s; /* Smooth transitions */
+  }
+  
+  .calendar-date:hover {
+    background-color: #e0e0e0; /* Light hover effect */
+  }
+  
+  .calendar-date.empty {
+    background-color: transparent;
+  }
+  
+  .weekday {
+    background-color: #f0f0f0;
+  }
+  
+  .weekend {
+    background-color: #ffa726; /* Orange for weekends */
+    color: #fff;
+  }
+  
+  .sunday {
+    background-color: #f44336; /* Red for Sundays */
+    color: #fff;
+  }
+  

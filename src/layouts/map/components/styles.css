@@ -243,15 +243,15 @@
       100% - 50px
     ); /* Set width to 100% minus the total padding (20px on each side) */
     max-height: auto;
-    margin: 20px auto;
-    padding: 20px;
+    margin: 5px auto;
+    padding: 10px;
     background-color: #f8f8f8;
     border: 1px solid #ddd;
     border-radius: 8px;
     box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.2);
     text-align: left;
     box-sizing: border-box; /* Include padding and border in the width */
-    padding: 20px; /* Optional: Add padding for spacing */
+  
   }
   
   .info-container h2 {
