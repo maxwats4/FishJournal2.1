@@ -46,6 +46,7 @@ import SignIn from "layouts/authentication/sign-in";
 import SignUp from "layouts/authentication/sign-up";
 import Journal from "layouts/journal";
 import Map from "layouts/map";
+import InfoDashboard from "layouts/infodashboard";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
@@ -59,6 +60,14 @@ const routes = [
   //   route: "/dashboard",
   //   component: <Dashboard />,
   // },
+  {
+    type: "collapse",
+    name: "Info Dashboard",
+    key: "InfoDashboard",
+    icon: <Icon fontSize="small">dashboard</Icon>,
+    route: "/dashboard",
+    component: <InfoDashboard />,
+  },
   {
     type: "collapse",
     name: "Map",
