@@ -17,8 +17,12 @@ import Footer from "examples/Footer"
 // Custom Components
 import ComplexStatisticsCard from "examples/Cards/StatisticsCards/ComplexStatisticsCard";
 
-// import calendar
-import Calendar from './components/calendar';
+// import first calendar
+//import Calendar from './components/calendar';
+
+// test calendar
+import InfiniteCalendar from 'react-infinite-calendar';
+import 'react-infinite-calendar/styles.css'; // only needs to be imported once
 
 // Mock Data
 const suggestions = ['Lake Pend Oreille', 'Snake River', 'Bear Lake', 'Priest Lake'];
@@ -27,6 +31,11 @@ const suggestions = ['Lake Pend Oreille', 'Snake River', 'Bear Lake', 'Priest La
 
 function InfoDashboard() {
   const [searchQuery, setSearchQuery] = React.useState('');
+
+
+  //variables for the new calendar
+  var today = new Date();
+  var lastWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
 
   return (
     <DashboardLayout>
@@ -187,7 +196,15 @@ function InfoDashboard() {
         {/* Calendar */}
         <Box sx={{ p: 2, border: '1px solid #ddd', borderRadius: '8px', backgroundColor: '#f5f5f5' }}>
           <Grid container spacing={2} justifyContent="center">
-           <Calendar/>
+           {/*<Calendar/>*/}
+           <InfiniteCalendar
+              width={400}
+              height={600}
+              selected={today}
+              disabledDays={[0,6]}
+              minDate={lastWeek}
+              layout='landscape'
+            />,
           </Grid>
         </Box>
 
