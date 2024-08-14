@@ -131,6 +131,7 @@ const ClickMap = () => {
           LocationWind: currentWindSpeed,
         };
 
+        // BRENNEN 
         set(ref(database, 'Journal/' + userID + '/Locations/' + nextId), locationData)
           .then(() => {
             console.log("Data submitted successfully!");

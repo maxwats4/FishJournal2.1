@@ -94,9 +94,12 @@ const LocationMap = () => {
   };
   
   // Function to open Google Maps with directions
+  // BRENNEN 
   const openGoogleMaps = (lat, long) => {
     const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${long}`;
     window.open(googleMapsUrl, '_blank');
+
+    
   };
 
   

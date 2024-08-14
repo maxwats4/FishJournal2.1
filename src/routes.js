@@ -60,14 +60,7 @@ const routes = [
   //   route: "/dashboard",
   //   component: <Dashboard />,
   // },
-  {
-    type: "collapse",
-    name: "Info Dashboard",
-    key: "InfoDashboard",
-    icon: <Icon fontSize="small">dashboard</Icon>,
-    route: "/dashboard",
-    component: <InfoDashboard />,
-  },
+  
   {
     type: "collapse",
     name: "Map",
@@ -75,6 +68,14 @@ const routes = [
     icon: <Icon fontSize="small">Map</Icon>,
     route: "/map",
     component: <Map />,
+  },
+  {
+    type: "collapse",
+    name: "Info Dashboard",
+    key: "InfoDashboard",
+    icon: <Icon fontSize="small">dashboard</Icon>,
+    route: "/dashboard",
+    component: <InfoDashboard />,
   },
   {
     type: "collapse",
