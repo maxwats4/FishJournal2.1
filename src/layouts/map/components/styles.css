@@ -265,7 +265,55 @@
   .side-by-side-container {
     display: flex;
     gap: 10px; /* Set your desired gap size */
+
+
   }
+
+  .info-container {
+    position: relative;
+    width: 100%; /* Make container span the full width */
+    padding: 20px 40px; /* Add padding on both sides */
+    box-sizing: border-box; /* Ensure padding doesn't affect width */
+    background-color: #f9f9f9; /* Light background to distinguish content */
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin: 0 auto;
+  }
+  
+  .info-content {
+    position: relative;
+  }
+  
+  .close-icon {
+    position: absolute;
+    top: 10px;
+    right: 20px; /* Padding to match the container */
+    font-size: 32px; /* Increase size */
+    cursor: pointer;
+    color: #ff6b6b; /* Noticeable color */
+    transition: transform 0.2s, color 0.2s;
+  }
+  
+  .close-icon:hover {
+    transform: scale(1.2); /* Add hover effect */
+    color: #ff3b3b; /* Brighter on hover */
+  }
+  
+  .expand-icon {
+    font-size: 32px; /* Increase size */
+    cursor: pointer;
+    display: block;
+    text-align: center;
+    color: #007bff;
+    margin: 10px auto;
+    transition: transform 0.2s, color 0.2s;
+  }
+  
+  .expand-icon:hover {
+    transform: scale(1.2); /* Add hover effect */
+    color: #0056b3;
+  }
+  
   
   /* Add more styles as needed */
   
