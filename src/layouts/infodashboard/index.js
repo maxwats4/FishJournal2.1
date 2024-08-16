@@ -43,9 +43,9 @@ function InfoDashboard() {
   const [weatherConditions, setWeatherConditions] = useState('Select location to view data');
   
   // Other Variables - need to add the set side of it 
-  const [busyness] = useState('Select location to view data');
-  const [news] = useState('Select location to view data');
-  const [restrictions] = useState('Select location to view data');
+  const [busyness] = useState('Feature Coming Soon!');
+  const [news] = useState('Feature Coming Soon!');
+  const [restrictions] = useState('Feature Coming Soon!');
 
   // Function to fetch water flow and temperature data from USGS Water Services API
   async function fetchRiverData(siteCode) {
