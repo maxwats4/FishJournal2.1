@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 
 // @mui material components
 import Grid from "@mui/material/Grid";
@@ -35,7 +35,7 @@ function MoveToLocation({ position }) {
 
   useEffect(() => {
     if (position) {
-      map.setView(position, 12); // Adjust zoom level as needed
+      map.setView(position, 10); // Adjust zoom level as needed
     }
   }, [position, map]);
 
