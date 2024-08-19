@@ -252,7 +252,8 @@ const LocationMap = () => {
 
   return (
     <div className="map-container">
-      <MapContainer center={[44.423176, -111.372181]} zoom={13}>
+      <MapContainer center={[44.423176, -111.372181]} zoom={13}
+      >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

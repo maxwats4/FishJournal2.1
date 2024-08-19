@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 // @mui material components
 import Grid from "@mui/material/Grid";
@@ -27,6 +27,9 @@ import waterLocations from './components/waterLocations';
 import "./styles.css";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import { Icon } from "leaflet";
+
+// Memoized MapContainer component
+const MemoizedMapContainer = React.memo(MapContainer);
 
 const suggestions = Object.values(waterLocations).map(location => location.name);
 
@@ -67,7 +70,7 @@ function InfoDashboard() {
   const [marker, setMarker] = useState(null);
 
   // Function to fetch water flow and temperature data from USGS Water Services API
-  async function fetchRiverData(siteCode) {
+  const fetchRiverData = useCallback(async (siteCode) => {
     const baseUrl = "https://waterservices.usgs.gov/nwis/iv";
     const params = {
       format: "json",
@@ -90,9 +93,9 @@ function InfoDashboard() {
       console.error("Error fetching data:", error);
       return null;
     }
-  }
+  }, []);
 
-  async function loadRiverData(siteCode) {
+  const loadRiverData = useCallback(async (siteCode) => {
     try {
       const data = await fetchRiverData(siteCode);
 
@@ -135,21 +138,12 @@ function InfoDashboard() {
       setWaterTemp('Data not available');
       setWaterFlow('Data not available');
     }
-  }
+  }, [fetchRiverData]);
 
-  /**
-   * Function to get the weather data from OpenWeatherAPI
-   * 
-   * @param {*} lat 
-   * @param {*} lng 
-   */
-  async function fetchWeatherData(lat, lng) {
+  // Function to get the weather data from OpenWeatherAPI
+  const fetchWeatherData = useCallback(async (lat, lng) => {
     const apiUrl =
-      "https://api.openweathermap.org/data/2.5/weather?lat=" +
-      lat +
-      "&lon=" +
-      lng +
-      "&units=imperial&appid=8003f2b648dfae7cf096951064b5a093";
+      `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&units=imperial&appid=8003f2b648dfae7cf096951064b5a093`;
 
     try {
       const response = await fetch(apiUrl);
@@ -169,7 +163,7 @@ function InfoDashboard() {
       setWindSpeed('Data not available');
       setWeatherConditions('Data not available');
     }
-  }
+  }, []);
 
   // Red Marker
   const customIconRed = new Icon({
@@ -192,7 +186,7 @@ function InfoDashboard() {
     });
   };
 
-  function updateMarker(lat, long) {
+  const updateMarker = useCallback((lat, long) => {
     setMarker(
       {
         geocode: [lat, long],
@@ -210,7 +204,7 @@ function InfoDashboard() {
         Icon: customIconRed,
       }
     );
-  }
+  }, [customIconRed]);
 
   useEffect(() => {
     if (currentLocation) {
@@ -219,14 +213,14 @@ function InfoDashboard() {
         loadRiverData(siteCode);
       }
     }
-  }, [currentLocation]);
+  }, [currentLocation, loadRiverData]);
 
   useEffect(() => {
     if (currentLat !== null && currentLong !== null) {
       fetchWeatherData(currentLat, currentLong);
       updateMarker(currentLat, currentLong); // Update marker on location change
     }
-  }, [currentLat, currentLong]);
+  }, [currentLat, currentLong, fetchWeatherData, updateMarker]);
 
   return (
     <DashboardLayout>
@@ -364,7 +358,7 @@ function InfoDashboard() {
 
         {/* Map */}
         <Box sx={{ mb: 4, p: 2, border: '1px solid #ddd', borderRadius: '8px', backgroundColor: '#f5f5f5', display: 'flex', justifyContent: 'center' }}>
-          <MapContainer
+          <MemoizedMapContainer
             center={currentLat !== null && currentLong !== null ? [currentLat, currentLong] : [43.615, -111.798]}
             zoom={currentLat !== null && currentLong !== null ? 12 : 7} // Adjust zoom level based on whether a location is selected
             maxZoom={18}
@@ -384,7 +378,7 @@ function InfoDashboard() {
                 <Popup>{marker.popUp}</Popup>
               </Marker>
             )}
-          </MapContainer>
+          </MemoizedMapContainer>
         </Box>
       </MDBox>
       <Footer />
