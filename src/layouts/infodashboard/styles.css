@@ -1,0 +1,322 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+  }
+  
+  #root {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 1em;
+    font-family: sans-serif;
+    color: #333;
+    background-color: #f3e4d7;
+    padding: 10px;
+  }
+  
+  /* height of the container */
+  .leaflet-container {
+    height: 80vh;
+    width: 100vh;
+    border-radius: 2rem;
+    display: flex;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  .MapContainer {
+    padding: 20px;
+    height: 100%;
+    width: 100%;
+    margin: 0 auto; /* This centers the container horizontally */
+    display: flex;
+  }
+  
+  .cluster-icon {
+    background-color: #333;
+    height: 2em;
+    width: 2em;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    box-shadow: 0 0 0px 5px #fff;
+  }
+  
+  .App {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    background-color: #f0f0f0;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 10px;
+  }
+  
+  input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
+  }
+  
+  button {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+  }
+  
+  button:hover {
+    background-color: #0056b3;
+    align-items: center;
+  }
+  
+  body {
+    margin: 0;
+    height: 100%;
+    width: 100%;
+  }
+  
+  /* HatchChart Code */
+  .modern-table-container {
+    width: 92%;
+    overflow-x: auto;
+  }
+  
+  .modern-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    background-color: #f5f5f5;
+  }
+  
+  .modern-table th,
+  .modern-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .modern-table th:first-child {
+    position: sticky; /* Make the first column sticky */
+    left: 0;
+    z-index: 1; /* Ensure it's above other elements */
+    background-color: #4caf50;
+  }
+  .modern-table td:first-child {
+    position: sticky; /* Make the first column sticky */
+    left: 0;
+    z-index: 1; /* Ensure it's above other elements */
+    background-color: #ffffff;
+  }
+  
+  .modern-table th {
+    background-color: #4caf50;
+    color: white;
+    width: 150px;
+  }
+  
+  .modern-table tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+  
+  .modern-table tbody tr:hover {
+    background-color: #ddd;
+  }
+  
+  /* Solid color for table cells */
+  .modern-table td.solid-color {
+    background-color: #00ff00; /* Green */
+  }
+  
+  .banner {
+    background-color: #ffffff;
+    color: rgb(0, 0, 0);
+    padding: 20px;
+    text-align: center;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .banner h1 {
+    font-size: 32px;
+    margin-bottom: 10px;
+  }
+
+  /*Delete button CSS*/
+
+  .delete-btn {
+    padding: 8px 16px; /* Smaller padding for a smaller button */
+    border: none;
+    border-radius: 4px;
+    background: linear-gradient(45deg, #e2110a, #d68f0c);
+    color: white;
+    font-size: 14px; /* Slightly smaller font size */
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    margin: 2px; /* Added margin for outside padding */
+  }
+  
+  .delete-btn:hover {
+    background: linear-gradient(45deg, #ff4b2b, #ff416c);
+    box-shadow: 0 5px 7px rgba(0, 0, 0, 0.15);
+  }
+  
+  .delete-btn:active {
+    background: linear-gradient(45deg, #ff4b2b, #ff416c);
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+    transform: translateY(1px);
+  }
+
+  /*Directions button CSS*/
+
+  .directions-btn {
+    padding: 8px 16px; /* Smaller padding for a smaller button */
+    border: none;
+    border-radius: 4px;
+    background: linear-gradient(45deg, #1509ee, #071177);
+    color: white;
+    font-size: 14px; /* Slightly smaller font size */
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    margin: 2px; /* Added margin for outside padding */
+  }
+  
+  .directions-btn:hover {
+    background: linear-gradient(45deg, #09752f, #053616);
+    box-shadow: 0 5px 7px rgba(0, 0, 0, 0.15);
+  }
+  
+  .directions-btn:active {
+    background: linear-gradient(45deg, #09752f, #053616);
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+    transform: translateY(1px);
+  }
+
+    /*copy locatoins button CSS*/
+    .copy-location-btn {
+      padding: 8px 16px; /* Smaller padding for a smaller button */
+      border: none;
+      border-radius: 4px;
+      background: linear-gradient(45deg, #1509ee, #071177);
+      color: white;
+      font-size: 14px; /* Slightly smaller font size */
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+      margin: 2px; /* Added margin for outside padding */
+    }
+    
+    .copy-location-btn:hover {
+      background: linear-gradient(45deg, #09752f, #053616);
+      box-shadow: 0 5px 7px rgba(0, 0, 0, 0.15);
+    }
+    
+    .copy-location-btn:active {
+      background: linear-gradient(45deg, #09752f, #053616);
+      box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+      transform: translateY(1px);
+    }
+
+  
+
+  .info-container {
+    width: calc(
+      100% - 50px
+    ); /* Set width to 100% minus the total padding (20px on each side) */
+    max-height: auto;
+    margin: 5px auto;
+    padding: 10px;
+    background-color: #f8f8f8;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.2);
+    text-align: left;
+    box-sizing: border-box; /* Include padding and border in the width */
+  
+  }
+  
+  .info-container h2 {
+    color: #007bff;
+  }
+  
+  .info-container p {
+    margin-bottom: 15px;
+  }
+  
+  .side-by-side-container {
+    display: flex;
+    gap: 10px; /* Set your desired gap size */
+
+
+  }
+
+  .info-container {
+    position: relative;
+    width: 100%; /* Make container span the full width */
+    padding: 20px 40px; /* Add padding on both sides */
+    box-sizing: border-box; /* Ensure padding doesn't affect width */
+    background-color: #f9f9f9; /* Light background to distinguish content */
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin: 0 auto;
+  }
+  
+  .info-content {
+    position: relative;
+  }
+  
+  .close-icon {
+    position: absolute;
+    top: 10px;
+    right: 20px; /* Padding to match the container */
+    font-size: 32px; /* Increase size */
+    cursor: pointer;
+    color: #ff6b6b; /* Noticeable color */
+    transition: transform 0.2s, color 0.2s;
+  }
+  
+  .close-icon:hover {
+    transform: scale(1.2); /* Add hover effect */
+    color: #ff3b3b; /* Brighter on hover */
+  }
+  
+  .expand-icon {
+    font-size: 32px; /* Increase size */
+    cursor: pointer;
+    display: block;
+    text-align: center;
+    color: #007bff;
+    margin: 10px auto;
+    transition: transform 0.2s, color 0.2s;
+  }
+  
+  .expand-icon:hover {
+    transform: scale(1.2); /* Add hover effect */
+    color: #0056b3;
+  }
+  
+  
+  /* Add more styles as needed */
+  
+  
+  
+  

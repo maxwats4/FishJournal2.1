@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 // @mui material components
 import Grid from "@mui/material/Grid";
@@ -23,11 +23,27 @@ import 'react-infinite-calendar/styles.css'; // only needs to be imported once
 // Variables to handle location data
 import waterLocations from './components/waterLocations';
 
+// for Map 
+import "./styles.css";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import { Icon } from "leaflet";
+
 const suggestions = Object.values(waterLocations).map(location => location.name);
+
+function MoveToLocation({ position }) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (position) {
+      map.setView(position, 12); // Adjust zoom level as needed
+    }
+  }, [position, map]);
+
+  return null;
+}
 
 function InfoDashboard() {
   const [currentLocation, setCurrentLocation] = useState('');
-  //const [currentSiteCode, setCurrentSiteCode] = useState('');
   const [currentLat, setCurrentLat] = useState(null);
   const [currentLong, setCurrentLong] = useState(null);
 
@@ -42,10 +58,13 @@ function InfoDashboard() {
   const [cloudCoverage, setCloudCoverage] = useState('Select location to view data');
   const [weatherConditions, setWeatherConditions] = useState('Select location to view data');
   
-  // Other Variables - need to add the set side of it 
+  // Other Variables
   const [busyness] = useState('Feature Coming Soon!');
   const [news] = useState('Feature Coming Soon!');
   const [restrictions] = useState('Feature Coming Soon!');
+
+  // Map variables
+  const [marker, setMarker] = useState(null);
 
   // Function to fetch water flow and temperature data from USGS Water Services API
   async function fetchRiverData(siteCode) {
@@ -56,8 +75,6 @@ function InfoDashboard() {
       siteStatus: "all",
       parameterCd: "00060,00010,00065", // Flow and temperature parameters
     };
-
-    //setCurrentSiteCode(siteCode);
 
     const url = new URL(baseUrl);
     url.search = new URLSearchParams(params).toString();
@@ -120,6 +137,12 @@ function InfoDashboard() {
     }
   }
 
+  /**
+   * Function to get the weather data from OpenWeatherAPI
+   * 
+   * @param {*} lat 
+   * @param {*} lng 
+   */
   async function fetchWeatherData(lat, lng) {
     const apiUrl =
       "https://api.openweathermap.org/data/2.5/weather?lat=" +
@@ -148,6 +171,47 @@ function InfoDashboard() {
     }
   }
 
+  // Red Marker
+  const customIconRed = new Icon({
+    iconUrl: require("./icons/RedMarker.png"),
+    iconSize: [38, 38], // size of the icon
+  });
+
+  // Function to open Google Maps with directions
+  const openGoogleMaps = (lat, long) => {
+    const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${long}`;
+    window.open(googleMapsUrl, '_blank');
+  };
+
+  const copyLocation = (lat, long) => {
+    const googleMapsLink = `https://www.google.com/maps?q=${lat},${long}`;
+    navigator.clipboard.writeText(googleMapsLink).then(() => {
+      alert('Location copied to clipboard! Share this link: ' + googleMapsLink);
+    }).catch(err => {
+      console.error('Failed to copy: ', err);
+    });
+  };
+
+  function updateMarker(lat, long) {
+    setMarker(
+      {
+        geocode: [lat, long],
+        popUp: (
+          <p>
+            <button type="button" className="directions-btn" onClick={() => openGoogleMaps(lat, long)}> 
+              Get Directions
+            </button>
+            <br />
+            <button type="button" className="copy-location-btn" onClick={() => copyLocation(lat, long)}> 
+              Copy to Share Location
+            </button>
+          </p>
+        ),
+        Icon: customIconRed,
+      }
+    );
+  }
+
   useEffect(() => {
     if (currentLocation) {
       const siteCode = Object.values(waterLocations).find(location => location.name === currentLocation)?.sitecode;
@@ -160,11 +224,9 @@ function InfoDashboard() {
   useEffect(() => {
     if (currentLat !== null && currentLong !== null) {
       fetchWeatherData(currentLat, currentLong);
+      updateMarker(currentLat, currentLong); // Update marker on location change
     }
   }, [currentLat, currentLong]);
-
-  //var today = new Date();
- // var lastWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
 
   return (
     <DashboardLayout>
@@ -196,89 +258,67 @@ function InfoDashboard() {
 
         {/* Main Content Containers */}
         <Box sx={{ mb: 4, p: 2, border: '1px solid #ddd', borderRadius: '8px', backgroundColor: '#f5f5f5' }}>
-          <Grid container spacing={2} justifyContent="center">
-            <Grid item xs={12} sm={6} md={4} lg={3}>
-              <MDBox mb={3}>
-                <ComplexStatisticsCard
-                  color="info"
-                  icon="thermostat"
-                  title="Water Temperature"
-                  count={waterTemp === 'Select location to view data' ? waterTemp : `${waterTemp}°F`}
-                  iconStyle={{ fontSize: '24px', marginRight: '16px', marginLeft: '8px' }} // Fixed spacing
-                />
-              </MDBox>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={4}>
+              <ComplexStatisticsCard
+                color="primary"
+                icon="water_drop"
+                title="Water Temp"
+                count={waterTemp === 'Select location to view data' ? waterTemp : `${waterTemp} °F`}
+              />
             </Grid>
-            <Grid item xs={12} sm={6} md={4} lg={3}>
-              <MDBox mb={3}>
-                <ComplexStatisticsCard
-                  color="success"
-                  icon="water"
-                  title="Water Gauge Level"
-                  count={waterLevel === 'Select location to view data' ? waterLevel : `${waterLevel} ft`}
-                  iconStyle={{ fontSize: '24px', marginRight: '16px', marginLeft: '8px' }} // Fixed spacing
-                />
-              </MDBox>
+            <Grid item xs={12} sm={4}>
+              <ComplexStatisticsCard
+                color="success"
+                icon="water_drop"
+                title="Water Flow"
+                count={waterFlow === 'Select location to view data' ? waterFlow : `${waterFlow} ft³/s`}
+              />
             </Grid>
-            <Grid item xs={12} sm={6} md={4} lg={3}>
-              <MDBox mb={3}>
-                <ComplexStatisticsCard
-                  color="warning"
-                  icon="tune"
-                  title="Water Flow"
-                  count={waterFlow === 'Select location to view data' ? waterFlow : `${waterFlow} cfs`}
-                  iconStyle={{ fontSize: '24px', marginRight: '16px', marginLeft: '8px' }} // Fixed spacing
-                />
-              </MDBox>
+            <Grid item xs={12} sm={4}>
+              <ComplexStatisticsCard
+                color="warning"
+                icon="bar_chart"
+                title="Water Level"
+                count={waterLevel === 'Select location to view data' ? waterLevel : `${waterLevel} ft`}
+              />
             </Grid>
           </Grid>
         </Box>
 
-        {/* Weather Information Container */}
         <Box sx={{ mb: 4, p: 2, border: '1px solid #ddd', borderRadius: '8px', backgroundColor: '#f5f5f5' }}>
-          <Grid container spacing={2} justifyContent="center">
-            <Grid item xs={12} sm={6} md={3}>
-              <MDBox mb={3}>
-                <ComplexStatisticsCard
-                  color="primary"
-                  icon="thermostat"
-                  title="Temperature"
-                  count={temperature === 'Select location to view data' ? temperature : `${temperature}°F`}
-                  iconStyle={{ fontSize: '24px', marginRight: '16px', marginLeft: '8px' }} // Fixed spacing
-                />
-              </MDBox>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={3}>
+              <ComplexStatisticsCard
+                color="info"
+                icon="cloud"
+                title="Cloud Coverage"
+                count={cloudCoverage === 'Select location to view data' ? cloudCoverage : `${cloudCoverage} %`}
+              />
             </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <MDBox mb={3}>
-                <ComplexStatisticsCard
-                  color="info"
-                  icon="air"
-                  title="Wind Speed"
-                  count={windSpeed === 'Select location to view data' ? windSpeed : `${windSpeed} mph`}
-                  iconStyle={{ fontSize: '24px', marginRight: '16px', marginLeft: '8px' }} // Fixed spacing
-                />
-              </MDBox>
+            <Grid item xs={12} sm={3}>
+              <ComplexStatisticsCard
+                color="primary"
+                icon="thermostat"
+                title="Temperature"
+                count={temperature === 'Select location to view data' ? temperature : `${temperature} °F`}
+              />
             </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <MDBox mb={3}>
-                <ComplexStatisticsCard
-                  color="success"
-                  icon="cloud"
-                  title="Cloud Coverage"
-                  count={cloudCoverage === 'Select location to view data' ? cloudCoverage : `${cloudCoverage}%`}
-                  iconStyle={{ fontSize: '24px', marginRight: '16px', marginLeft: '8px' }} // Fixed spacing
-                />
-              </MDBox>
+            <Grid item xs={12} sm={3}>
+              <ComplexStatisticsCard
+                color="info"
+                icon="air"
+                title="Wind Speed"
+                count={windSpeed === 'Select location to view data' ? windSpeed : `${windSpeed} mph`}
+              />
             </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <MDBox mb={3}>
-                <ComplexStatisticsCard
-                  color="warning"
-                  icon="calendar_today"
-                  title="Weather Conditions"
-                  count={weatherConditions}
-                  iconStyle={{ fontSize: '24px', marginRight: '16px', marginLeft: '8px' }} // Fixed spacing
-                />
-              </MDBox>
+            <Grid item xs={12} sm={3}>
+              <ComplexStatisticsCard
+                color="warning"
+                icon="cloudy"
+                title="Conditions"
+                count={weatherConditions}
+              />
             </Grid>
           </Grid>
         </Box>
@@ -322,20 +362,30 @@ function InfoDashboard() {
           </Grid>
         </Box>
 
-        {/* Calendar */}
-        <Box sx={{ p: 2, border: '1px solid #ddd', borderRadius: '8px', backgroundColor: '#f5f5f5' }}>
-          <Grid container spacing={2} justifyContent="center">
-            {/*<InfiniteCalendar
-              width={400}
-              height={600}
-              selected={today}
-              disabledDays={[0, 6]}
-              minDate={lastWeek}
-              layout='landscape'
-            />*/}
-          </Grid>
+        {/* Map */}
+        <Box sx={{ mb: 4, p: 2, border: '1px solid #ddd', borderRadius: '8px', backgroundColor: '#f5f5f5', display: 'flex', justifyContent: 'center' }}>
+          <MapContainer
+            center={currentLat !== null && currentLong !== null ? [currentLat, currentLong] : [43.615, -111.798]}
+            zoom={currentLat !== null && currentLong !== null ? 12 : 7} // Adjust zoom level based on whether a location is selected
+            maxZoom={18}
+            scrollWheelZoom={true}
+            style={{ height: '400px', width: '100%' }} // Adjust height and width as needed
+          >
+            <MoveToLocation position={currentLat !== null && currentLong !== null ? [currentLat, currentLong] : null} />
+            <TileLayer
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            />
+            {marker && (
+              <Marker
+                position={marker.geocode}
+                icon={marker.Icon}
+              >
+                <Popup>{marker.popUp}</Popup>
+              </Marker>
+            )}
+          </MapContainer>
         </Box>
-
       </MDBox>
       <Footer />
     </DashboardLayout>
