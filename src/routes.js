@@ -71,7 +71,7 @@ const routes = [
   },
   {
     type: "collapse",
-    name: "Dashboard",
+    name: "Water Dashboard",
     key: "InfoDashboard",
     icon: <Icon fontSize="small">dashboard</Icon>,
     route: "/dashboard",
