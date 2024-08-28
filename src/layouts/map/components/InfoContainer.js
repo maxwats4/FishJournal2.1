@@ -24,13 +24,7 @@ const InfoContainer = () => {
             Each marker on the map represents a fishing location, and you can
             click on them to view details about the location.
           </p>
-          <h3>Is Your Location Not Here?</h3>
-          <p>
-            Click the "Switch Mode" button to switch to the Click-n-find map
-            which allows you to click anywhere and get local river conditions.
-            Click the "Save Location" button to save locations to be viewed on
-            the previous map.
-          </p>
+          
           <h2>Have Feedback?</h2>
           <p>Click the following link to submit an improvement request.</p>
           <a href="https://forms.gle/NjNcb69YMH9tbMqbA">Feedback Form</a>
