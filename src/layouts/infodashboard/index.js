@@ -67,81 +67,90 @@ function InfoDashboard() {
   const [marker, setMarker] = useState(null);
 
   // Function to fetch water flow and temperature data from USGS Water Services API
-  async function fetchRiverData(siteCode) {
-    const baseUrl = "https://waterservices.usgs.gov/nwis/iv";
-    const params = {
-      format: "json",
-      sites: siteCode,
-      siteStatus: "all",
-      parameterCd: "00060,00010,00065", // Flow and temperature parameters
-    };
+async function fetchRiverData(siteCode) {
+  const baseUrl = "https://waterservices.usgs.gov/nwis/iv";
+  const params = {
+    format: "json",
+    sites: siteCode,
+    siteStatus: "all",
+    parameterCd: "00060,00010,00065", // Flow and temperature parameters
+  };
 
-    console.log("fetchRiverData API Hit");
+  console.log("fetchRiverData API Hit");
 
+  const url = new URL(baseUrl);
+  url.search = new URLSearchParams(params).toString();
 
-    const url = new URL(baseUrl);
-    url.search = new URLSearchParams(params).toString();
-
-    try {
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      return null;
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    return null;
   }
+}
 
-  async function loadRiverData(siteCode) {
-    try {
-      const data = await fetchRiverData(siteCode);
+async function loadRiverData(siteCode) {
+  try {
+    const data = await fetchRiverData(siteCode);
 
-      console.log("LoadRiverData API Hit");
+    console.log("LoadRiverData API Hit");
 
+    if (data && data.value && data.value.timeSeries) {
+      let updatedRiverInfo = {};
 
-      if (data && data.value && data.value.timeSeries) {
-        let updatedRiverInfo = {};
+      data.value.timeSeries.forEach((series) => {
+        const lat = series.sourceInfo.geoLocation.geogLocation.latitude;
+        const long = series.sourceInfo.geoLocation.geogLocation.longitude;
+        setCurrentLat(lat);
+        setCurrentLong(long);
 
-        data.value.timeSeries.forEach((series) => {
-          const lat = series.sourceInfo.geoLocation.geogLocation.latitude;
-          const long = series.sourceInfo.geoLocation.geogLocation.longitude;
-          setCurrentLat(lat);
-          setCurrentLong(long);
-
-          switch (series.variable.variableCode[0].value) {
-            case "00060":
-              updatedRiverInfo.waterFlow = series.values?.[0]?.value?.[0]?.value ?? 'Data not available';
-              break;
-            case "00010":
-              updatedRiverInfo.waterTemp = series.values?.[0]?.value?.[0]?.value ?? 'Data not available';
-              break;
-            case "00065":
-              updatedRiverInfo.height = series.values?.[0]?.value?.[0]?.value ?? 'Data not available';
-              break;
-            default:
-              break;
+        switch (series.variable.variableCode[0].value) {
+          case "00060": {
+            updatedRiverInfo.waterFlow = series.values?.[0]?.value?.[0]?.value ?? 'Data not available';
+            break;
           }
-        });
+          case "00010": {
+            // Convert temperature from Celsius to Fahrenheit
+            const tempCelsius = series.values?.[0]?.value?.[0]?.value;
+            if (tempCelsius !== undefined) {
+              const tempFahrenheit = (tempCelsius * 9/5) + 32;
+              updatedRiverInfo.waterTemp = tempFahrenheit.toFixed(2);
+            } else {
+              updatedRiverInfo.waterTemp = 'Data not available';
+            }
+            break;
+          }
+          case "00065": {
+            updatedRiverInfo.height = series.values?.[0]?.value?.[0]?.value ?? 'Data not available';
+            break;
+          }
+          default:
+            break;
+        }
+      });
 
-        setWaterLevel(updatedRiverInfo.height ?? 'Data not available');
-        setWaterTemp(updatedRiverInfo.waterTemp ?? 'Data not available');
-        setWaterFlow(updatedRiverInfo.waterFlow ?? 'Data not available');
-      } else {
-        console.log("Data not found or incomplete.");
-        setWaterLevel('Data not available');
-        setWaterTemp('Data not available');
-        setWaterFlow('Data not available');
-      }
-    } catch (error) {
-      console.error("Error:", error);
+      setWaterLevel(updatedRiverInfo.height ?? 'Data not available');
+      setWaterTemp(updatedRiverInfo.waterTemp ?? 'Data not available');
+      setWaterFlow(updatedRiverInfo.waterFlow ?? 'Data not available');
+    } else {
+      console.log("Data not found or incomplete.");
       setWaterLevel('Data not available');
       setWaterTemp('Data not available');
       setWaterFlow('Data not available');
     }
+  } catch (error) {
+    console.error("Error:", error);
+    setWaterLevel('Data not available');
+    setWaterTemp('Data not available');
+    setWaterFlow('Data not available');
   }
+}
+
 
   /**
    * Function to get the weather data from OpenWeatherAPI

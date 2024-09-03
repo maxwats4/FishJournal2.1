@@ -1,19 +1,4 @@
-/**
-=========================================================
-* Material Dashboard 2 React - v2.2.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "App";
@@ -21,19 +6,42 @@ import App from "App";
 // Material Dashboard 2 React Context Provider
 import { MaterialUIControllerProvider } from "context";
 
-//UserProvider
+// UserProvider
 import { UserProvider } from "layouts/authentication/UserProvider";
+
+// LoadingScreen component
+import LoadingScreen from "layouts/loading/LoadingScreen";
+
 
 const container = document.getElementById("app");
 const root = createRoot(container);
 
-root.render(
-  
-  <BrowserRouter>
-   <UserProvider>
-    <MaterialUIControllerProvider>
-      <App />
-    </MaterialUIControllerProvider>
-    </UserProvider>
-  </BrowserRouter>
-);
+function Root() {
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Simulate loading state for demonstration
+  useEffect(() => {
+    // Simulate a delay for loading
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 2000); // Adjust time as needed
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
+
+  return (
+    <BrowserRouter>
+      <UserProvider>
+        <MaterialUIControllerProvider>
+          <App />
+        </MaterialUIControllerProvider>
+      </UserProvider>
+    </BrowserRouter>
+  );
+}
+
+root.render(<Root />);

@@ -1,18 +1,3 @@
-/**
-=========================================================
-* Material Dashboard 2 React - v2.2.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
 import { useState, useEffect, useMemo } from "react";
 
 // react-router components
@@ -25,6 +10,9 @@ import Icon from "@mui/material/Icon";
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
+
+//loa
+import LoadingScreen from "layouts/loading/LoadingScreen";
 
 // Material Dashboard 2 React example components
 import Sidenav from "examples/Sidenav";
@@ -67,6 +55,7 @@ export default function App() {
   } = controller;
   const [onMouseEnter, setOnMouseEnter] = useState(false);
   const [rtlCache, setRtlCache] = useState(null);
+  const [isLoading, setIsLoading] = useState(true); // Add loading state
   const { pathname } = useLocation();
 
   // Cache for the rtl
@@ -109,6 +98,17 @@ export default function App() {
     document.scrollingElement.scrollTop = 0;
   }, [pathname]);
 
+  // Simulate loading process with async initialization
+  useEffect(() => {
+    const initializeApp = async () => {
+      // Simulate async operation, e.g., data fetching or other initializations
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Adjust as needed
+      setIsLoading(false); // Set loading to false when initialization is complete
+    };
+
+    initializeApp();
+  }, []);
+
   const getRoutes = (allRoutes) =>
     allRoutes.map((route) => {
       if (route.collapse) {
@@ -145,6 +145,10 @@ export default function App() {
       </Icon>
     </MDBox>
   );
+
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
 
   return direction === "rtl" ? (
     <CacheProvider value={rtlCache}>
