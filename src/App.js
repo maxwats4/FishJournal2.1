@@ -11,7 +11,7 @@ import Icon from "@mui/material/Icon";
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
 
-//loa
+//loading screen
 import LoadingScreen from "layouts/loading/LoadingScreen";
 
 // Material Dashboard 2 React example components
@@ -145,6 +145,7 @@ export default function App() {
       </Icon>
     </MDBox>
   );
+
 
   if (isLoading) {
     return <LoadingScreen />;

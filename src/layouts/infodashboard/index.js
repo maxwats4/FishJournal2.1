@@ -17,9 +17,6 @@ import Footer from "examples/Footer";
 // Custom Components
 import ComplexStatisticsCard from "examples/Cards/StatisticsCards/ComplexStatisticsCard";
 
-// Test calendar
-import 'react-infinite-calendar/styles.css'; // only needs to be imported once
-
 // Variables to handle location data
 import waterLocations from './components/waterLocations';
 

@@ -83,7 +83,7 @@ function Footer({ light }) {
                   fontWeight="regular"
                   color={light ? "white" : "dark"}
                 >
-                  Fish Journal
+                  FishEye Pro
                 </MDTypography>
               </Link>
             </MDBox>
