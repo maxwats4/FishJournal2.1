@@ -32,7 +32,7 @@ function Footer({ light }) {
   const { size } = typography;
 
   return (
-    <MDBox position="absolute" width="100%" bottom={0} py={4}>
+    <MDBox position="absolute" width="100%" bottom={0} py={4} pt={6}> {/* Added pt={6} for top padding */}
       <Container>
         <MDBox
           width="100%"
@@ -51,16 +51,13 @@ function Footer({ light }) {
             fontSize={size.sm}
           >
             &copy; {new Date().getFullYear()}
-            <MDBox fontSize={size.md} color={light ? "white" : "dark"} mb={-0.5} mx={0.25}>
-              
-            </MDBox>
+            <MDBox fontSize={size.md} color={light ? "white" : "dark"} mb={-0.5} mx={0.25}></MDBox>
             by
             <Link href="https://www.creative-tim.com/" target="_blank">
               <MDTypography variant="button" fontWeight="medium" color={light ? "white" : "dark"}>
                 &nbsp;Max Watson&nbsp;
               </MDTypography>
             </Link>
-            
           </MDBox>
           <MDBox
             component="ul"
@@ -129,6 +126,7 @@ function Footer({ light }) {
     </MDBox>
   );
 }
+
 
 // Setting default props for the Footer
 Footer.defaultProps = {

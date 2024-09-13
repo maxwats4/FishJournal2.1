@@ -69,7 +69,7 @@ function CoverLayout({ coverHeight, image, children }) {
           </Grid>
         </Grid>
       </MDBox>
-      <Footer />
+     {/**  <Footer />  this is where I took out the footer*/}
     </PageLayout>
   );
 }
